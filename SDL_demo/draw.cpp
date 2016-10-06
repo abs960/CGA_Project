@@ -79,24 +79,24 @@ void draw_wu_point(bool more_vertical, SDL_Surface *s, int x, int y, Matrix mtrx
 		put_pixel32(s, x, y, new_colour);
 }
 
-void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour) {
-	bool more_vertical = abs(second.y - first.y) > abs(second.x - first.x);
+void wu_line(SDL_Surface *s, Line line, Matrix mtrxF, int colour) {
+	bool more_vertical = abs(line.finish.y - line.start.y) > abs(line.finish.x - line.start.x);
 	if (more_vertical) {
-		swap(&first.x, &first.y);
-		swap(&second.x, &second.y);
+		swap(&line.start.x, &line.start.y);
+		swap(&line.finish.x, &line.finish.y);
 	}
-	if (first.x > second.x) {
-		swap(&first.x, &second.x);
-		swap(&first.y, &second.y);
+	if (line.start.x > line.finish.x) {
+		swap(&line.start.x, &line.finish.x);
+		swap(&line.start.y, &line.finish.y);
 	}
 
-	draw_wu_point(more_vertical, s, first.x, first.y, mtrxF, 1, colour);
-	draw_wu_point(more_vertical, s, second.x, second.y, mtrxF, 1, colour);
-	float dx = second.x - first.x;
-	float dy = second.y - first.y;
+	draw_wu_point(more_vertical, s, line.start.x, line.start.y, mtrxF, 1, colour);
+	draw_wu_point(more_vertical, s, line.finish.x, line.finish.y, mtrxF, 1, colour);
+	float dx = line.finish.x - line.start.x;
+	float dy = line.finish.y - line.start.y;
 	float k = dy / dx;
-	float y = first.y + k;
-	for (float x = first.x + 1; x <= second.x - 1; x++) {
+	float y = line.start.y + k;
+	for (float x = line.start.x + 1; x <= line.finish.x - 1; x++) {
 		int y_int = floor(y);
 		float intensity = y - y_int;
 		if (intensity == 0)
@@ -107,17 +107,17 @@ void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour
 	}
 }
 
-void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour) {
-	int delta_x = abs(second.x - first.x);
-	int delta_y = abs(second.y - first.y);
-	int step_x = second.x >= first.x ? 1 : -1;
-	int step_y = second.y >= first.y ? 1 : -1;
+void brezenheim_line(SDL_Surface *s, Line line, Matrix mtrxF, int colour) {
+	int delta_x = abs(line.finish.x - line.start.x);
+	int delta_y = abs(line.finish.y - line.start.y);
+	int step_x = line.finish.x >= line.start.x ? 1 : -1;
+	int step_y = line.finish.y >= line.start.y ? 1 : -1;
 	if (delta_y <= delta_x) {
 		int d = (delta_y << 1) - delta_x; 
 		int d1 = delta_y << 1;
 		int d2 = (delta_y - delta_x) << 1;
-		put_pixel32(s, first.x, first.y, colour);
-		for (int x = first.x + step_x, y = first.y, i = 1; i <= delta_x; i++, x += step_x) {
+		put_pixel32(s, line.start.x, line.start.y, colour);
+		for (int x = line.start.x + step_x, y = line.start.y, i = 1; i <= delta_x; i++, x += step_x) {
 			if (d > 0) {
 				d += d2; 
 				y += step_y;
@@ -128,8 +128,8 @@ void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, in
 		int d = (delta_x << 1) - delta_y; 
 		int d1 = delta_x << 1;
 		int d2 = (delta_x - delta_y) << 1;
-		put_pixel32(s, first.x, first.y, colour);
-		for (int x = first.x, y = first.y + step_y, i = 1; i <= delta_y; i++, y += step_y) {
+		put_pixel32(s, line.start.x, line.start.y, colour);
+		for (int x = line.start.x, y = line.start.y + step_y, i = 1; i <= delta_y; i++, y += step_y) {
 			if (d > 0) {
 				d += d2; 
 				x += step_x;
@@ -143,7 +143,10 @@ void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, in
 void draw_figure(SDL_Surface *s, Point* points, int side_count, Matrix mtrxF) {
 	int colour = COLOUR_GREEN;
 	for (int i = 0; i < side_count; i++) {
-		wu_line(s, points[i], points[(i + 1) % side_count], mtrxF, colour);
+		Line line;
+		line.start = points[i];
+		line.finish = points[(i + 1) % side_count];
+		wu_line(s, line, mtrxF, colour);
 	}
 }
 
@@ -167,7 +170,10 @@ void recount_coordinates(Point* coordinates, int side_count, float side_separato
 void draw_section_window(SDL_Surface *s, Point* points, int side_count, Matrix mtrxF) {
 	int colour = COLOUR_RED;
 	for (int i = 0; i < side_count; i++) {
-		wu_line(s, points[i], points[(i + 1) % side_count], mtrxF, colour);
+		Line line;
+		line.start = points[i];
+		line.finish = points[(i + 1) % side_count];
+		wu_line(s, line, mtrxF, colour);
 	}
 }
 
@@ -197,9 +203,9 @@ Point get_new_coordinate(Point point, Matrix mtrxF) {
 }
 
 Uint32 change_colour(Uint32 base, float intensity) {
-	int b = (base & 0xFF) * intensity;
-	int g = ((base & 0xFF00) >> 8) * intensity;
 	int r = ((base & 0xFF0000) >> 10) * intensity;
+	int g = ((base & 0xFF00) >> 8) * intensity;
+	int b = (base & 0xFF) * intensity;
 	return RGB32(r, g, b);
 }
 
