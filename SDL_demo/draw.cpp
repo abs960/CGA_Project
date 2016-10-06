@@ -227,7 +227,7 @@ void draw(SDL_Surface *s, Matrix mtrxF[DRAWN_FIGURES_COUNT], int nested_figure_c
 	draw_section_window(s, section_window, 4, mtrxF[0]);
 
 	Point **coordinates = (Point**)calloc(DRAWN_FIGURES_COUNT - 1, sizeof(Point*));
-	for (int i = 1; i < DRAWN_FIGURES_COUNT; i++) {
+	for (int i = 0; i < DRAWN_FIGURES_COUNT - 1; i++) {
 		coordinates[i] = (Point*)calloc(side_count, sizeof(Point));
 		init_start_coordinates(coordinates[i], side_count, RADIUS);
 	}
@@ -235,15 +235,15 @@ void draw(SDL_Surface *s, Matrix mtrxF[DRAWN_FIGURES_COUNT], int nested_figure_c
 	float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / nested_figure_count);
 	float side_separator_coef = tmp_tan / (tmp_tan + 1);
 
-	for (int i = 1; i < DRAWN_FIGURES_COUNT; i++)
+	for (int i = 0; i < DRAWN_FIGURES_COUNT - 1; i++)
 		for (int j = 0; j < nested_figure_count; j++) {
-			draw_figure(s, coordinates[i], side_count, mtrxF[i]);
+			draw_figure(s, coordinates[i], side_count, mtrxF[i + 1]);
 			recount_coordinates(coordinates[i], side_count, side_separator_coef);
 		}
 
-	/*for (int i = 1; i < DRAWN_FIGURES_COUNT; i++)
+	for (int i = 0; i < DRAWN_FIGURES_COUNT - 1; i++)
 		free(coordinates[i]);
-	free(coordinates);*/
+	free(coordinates);
 
 	free(section_window);
 }
