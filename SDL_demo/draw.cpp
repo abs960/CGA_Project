@@ -1,23 +1,31 @@
 ﻿#include "draw.h"
 #include "stdafx.h"
 #include "math.h"
+#include "time.h"
 
 #define RGB32(r, g, b) static_cast<uint32_t>((((static_cast<uint32_t>(r) << 8) | g) << 8) | b)
 
-
-static int crutch = 4;
-
-
+void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 pixel, Matrix mtrxF, float intensity);
 Uint32 get_pixel32(SDL_Surface *surface, int x, int y, Matrix mtrxF);
+void init_start_coordinates(Point* start, int side_count, int radius);
+void swap(float *first, float *second);
+void draw_wu_point(bool more_vertical, SDL_Surface *s, int x, int y, Matrix mtrxF, float intensity, int colour);
+void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour);
+void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour);
+void draw_figure(SDL_Surface *s, Point* points, int side_count, Matrix mtrxF);
+void recount_coordinates(Point* coordinates, int side_count, float side_separator_coef);
+void draw_section_window(SDL_Surface *s, Point* points, int side_count, Matrix mtrxF);
+int generate_colour();
 
 const float LITTLE_ANGLE = 5,
 			BIG_ANGLE = 180 - LITTLE_ANGLE,
-			STEP = 0.05,
-			START_SIDE_LENGTH = 200, 
-			RADIUS = (START_SIDE_LENGTH / 2) * sqrt(2);
+			STEP = 0.05;
 
-const int	COLOUR_GREEN = 0x0000FF00, 
-			MULTIPLICITY = 3;
+const int	MULTIPLICITY	= 3,
+			COLOUR_GREEN	= 0x0000FF00,
+			COLOUR_RED		= 0x000000FF;
+
+extern int	side_count;
 
 void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 pixel, Matrix mtrxF, float intensity)
 {
@@ -86,11 +94,11 @@ void mult_mtrx_vector(Matrix mtrx, float* vector, float* result) {
 	}
 }
 
-void init_start_coordinates(Point* start, int side_count) {
+void init_start_coordinates(Point* start, int side_count, int radius) {
 	int start_angle = abs(90 - (360 / side_count) / 2);
 	for (int i = 0; i < side_count; i++) {
-		start[i].x = RADIUS * cos(2 * M_PI * i / side_count + RAD(start_angle));
-		start[i].y = RADIUS * sin(2 * M_PI * i / side_count + RAD(start_angle));
+		start[i].x = radius * cos(2 * M_PI * i / side_count + RAD(start_angle));
+		start[i].y = radius * sin(2 * M_PI * i / side_count + RAD(start_angle));
 	}
 
 }
@@ -101,14 +109,14 @@ void swap(float *first, float *second) {
 	*second = tmp;
 }
 
-void draw_wu_point(bool more_vertical, SDL_Surface *s, int x, int y, Matrix mtrxF, float intensity) {
+void draw_wu_point(bool more_vertical, SDL_Surface *s, int x, int y, Matrix mtrxF, float intensity, int colour) {
 	if (more_vertical) 
-		put_pixel32(s, y, x, COLOUR_GREEN, mtrxF, intensity);
+		put_pixel32(s, y, x, colour, mtrxF, intensity);
 	else 
-		put_pixel32(s, x, y, COLOUR_GREEN, mtrxF, intensity);
+		put_pixel32(s, x, y, colour, mtrxF, intensity);
 }
 
-void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF) {
+void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour) {
 	bool more_vertical = abs(second.y - first.y) > abs(second.x - first.x);
 	if (more_vertical) {
 		swap(&first.x, &first.y);
@@ -119,8 +127,8 @@ void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF) {
 		swap(&first.y, &second.y);
 	}
 
-	draw_wu_point(more_vertical, s, first.x, first.y, mtrxF, 1);
-	draw_wu_point(more_vertical, s, second.x, second.y, mtrxF, 1);
+	draw_wu_point(more_vertical, s, first.x, first.y, mtrxF, 1, colour);
+	draw_wu_point(more_vertical, s, second.x, second.y, mtrxF, 1, colour);
 	float dx = second.x - first.x;
 	float dy = second.y - first.y;
 	float k = dy / dx;
@@ -130,14 +138,13 @@ void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF) {
 		float intensity = y - y_int;
 		if (intensity == 0)
 			intensity = 1;
-		draw_wu_point(more_vertical, s, x, y_int, mtrxF, 1 - intensity);
-		draw_wu_point(more_vertical, s, x, y_int + 1, mtrxF, intensity);
+		draw_wu_point(more_vertical, s, x, y_int, mtrxF, 1 - intensity, colour);
+		draw_wu_point(more_vertical, s, x, y_int + 1, mtrxF, intensity, colour);
 		y += k;
 	}
 }
 
-void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF)
-{
+void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF, int colour) {
 	int delta_x = abs(second.x - first.x);
 	int delta_y = abs(second.y - first.y);
 	int step_x = second.x >= first.x ? 1 : -1;
@@ -146,34 +153,34 @@ void brezenheim_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF)
 		int d = (delta_y << 1) - delta_x; 
 		int d1 = delta_y << 1;
 		int d2 = (delta_y - delta_x) << 1;
-		put_pixel32(s, first.x, first.y, COLOUR_GREEN, mtrxF, 1);
+		put_pixel32(s, first.x, first.y, colour, mtrxF, 1);
 		for (int x = first.x + step_x, y = first.y, i = 1; i <= delta_x; i++, x += step_x) {
 			if (d > 0) {
 				d += d2; 
 				y += step_y;
 			} else d += d1;
-			put_pixel32(s, x, y, COLOUR_GREEN, mtrxF, 1);
+			put_pixel32(s, x, y, colour, mtrxF, 1);
 		}
 	} else {
 		int d = (delta_x << 1) - delta_y; 
 		int d1 = delta_x << 1;
 		int d2 = (delta_x - delta_y) << 1;
-		put_pixel32(s, first.x, first.y, COLOUR_GREEN, mtrxF, 1);
+		put_pixel32(s, first.x, first.y, colour, mtrxF, 1);
 		for (int x = first.x, y = first.y + step_y, i = 1; i <= delta_y; i++, y += step_y) {
 			if (d > 0) {
 				d += d2; 
 				x += step_x;
 			} else
 				d += d1;
-			put_pixel32(s, x, y, COLOUR_GREEN, mtrxF, 1);
+			put_pixel32(s, x, y, colour, mtrxF, 1);
 		}
 	}
 }
 
 void draw_figure(SDL_Surface *s, Point* points, int side_count, Matrix mtrxF) {
+	int colour = COLOUR_GREEN;
 	for (int i = 0; i < side_count; i++) {
-//		brezenheim_line(s, points[i % side_count], points[(i + 1) % side_count], mtrxF);
-		wu_line(s, points[i % side_count], points[(i + 1) % side_count], mtrxF);
+		wu_line(s, points[i], points[(i + 1) % side_count], mtrxF, colour);
 	}
 }
 
@@ -194,19 +201,49 @@ void recount_coordinates(Point* coordinates, int side_count, float side_separato
 	free(newCoordinates);
 }
 
-void draw(SDL_Surface *s, Matrix mtrxF, int side_count, int figure_count)
+void draw_section_window(SDL_Surface *s, Point* points, int side_count, Matrix mtrxF) {
+	int colour = COLOUR_RED;
+	for (int i = 0; i < side_count; i++) {
+		wu_line(s, points[i], points[(i + 1) % side_count], mtrxF, colour);
+	}
+}
+
+int generate_colour() {
+	int colour = 0;
+	do {
+		srand(time(NULL));
+		int r = rand() % 255;
+		int g = rand() % 255;
+		int b = rand() % 255;
+		colour = RGB(r, g, b);
+	} while (colour == 0);
+	return colour;
+}
+
+void draw(SDL_Surface *s, Matrix mtrxF[DRAWN_FIGURES_COUNT], int nested_figure_count, bool draw_inside)
 {
-	Point *coordinates = (Point*)calloc(side_count, sizeof(Point));
-	init_start_coordinates(coordinates, side_count);
+	Point *section_window = (Point*)calloc(4, sizeof(Point));
+	init_start_coordinates(section_window, 4, RADIUS);
+	draw_section_window(s, section_window, 4, mtrxF[0]);
 
-	float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / figure_count);
-	float side_separator_coef = tmp_tan / (tmp_tan + 1);
-
-	for (int i = 0; i < figure_count; i++)
-	{
-		draw_figure(s, coordinates, side_count, mtrxF);
-		recount_coordinates(coordinates, side_count, side_separator_coef);
+	Point **coordinates = (Point**)calloc(DRAWN_FIGURES_COUNT - 1, sizeof(Point*));
+	for (int i = 1; i < DRAWN_FIGURES_COUNT; i++) {
+		coordinates[i] = (Point*)calloc(side_count, sizeof(Point));
+		init_start_coordinates(coordinates[i], side_count, RADIUS);
 	}
 
-	free(coordinates);
+	float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / nested_figure_count);
+	float side_separator_coef = tmp_tan / (tmp_tan + 1);
+
+	for (int i = 1; i < DRAWN_FIGURES_COUNT; i++)
+		for (int j = 0; j < nested_figure_count; j++) {
+			draw_figure(s, coordinates[i], side_count, mtrxF[i]);
+			recount_coordinates(coordinates[i], side_count, side_separator_coef);
+		}
+
+	/*for (int i = 1; i < DRAWN_FIGURES_COUNT; i++)
+		free(coordinates[i]);
+	free(coordinates);*/
+
+	free(section_window);
 }
