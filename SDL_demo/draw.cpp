@@ -128,6 +128,8 @@ void wu_line(SDL_Surface *s, Point first, Point second, Matrix mtrxF) {
 	for (float x = first.x + 1; x <= second.x - 1; x++) {
 		int y_int = floor(y);
 		float intensity = y - y_int;
+		if (intensity == 0)
+			intensity = 1;
 		draw_wu_point(more_vertical, s, x, y_int, mtrxF, 1 - intensity);
 		draw_wu_point(more_vertical, s, x, y_int + 1, mtrxF, intensity);
 		y += k;
