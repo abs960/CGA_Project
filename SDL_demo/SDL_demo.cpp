@@ -200,9 +200,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	else
 	{
 		loadedSurface = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32,
-			0x000000FF,  // R
+			0x00FF0000,  // R
 			0x0000FF00,  // G
-			0x00FF0000,  // B
+			0x000000FF,  // B
 			0x00000000); // alpha
 
 		gTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
