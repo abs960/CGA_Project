@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "draw.h"
-#include "time.h"
 
 bool init();
 void close();
@@ -27,17 +26,16 @@ const int	SCL = 0,
 			TRS = 2,
 			FIN = 3,
 			// Side count limits
-			MAX_SIDE_COUNT = 20,
+			MAX_SIDE_COUNT = 30,
 			MIN_SIDE_COUNT = 3, 
 			START_SIDE_COUNT = 4,
-			// Figure count limits
-			MAX_FIGURE_COUNT = 20, 
+			// Nested figure count limits
+			MAX_FIGURE_COUNT = 50, 
 			MIN_FIGURE_COUNT = 2,
 			START_FIGURE_COUNT = 9;
 
 			// Matrices initial values
-const float XS_START = 1,
-			YS_START = 1,
+const float S_START = 1,
 			ANGLE_START = 0, 
 			XT_START = SCREEN_WIDTH / 2, 
 			YT_START = SCREEN_HEIGHT / 2, 
@@ -46,8 +44,14 @@ const float XS_START = 1,
 			STEP_T = 3,
 			STEP_R = 1;
 
-extern int	side_count;
+extern int	side_count[DRAWN_FIGURES_COUNT];
+extern int	nested_figure_count[DRAWN_FIGURES_COUNT];
 extern Uint32 colours[DRAWN_FIGURES_COUNT];
+
+// Secondary info about figures
+int			angles[DRAWN_FIGURES_COUNT];
+float		scales[DRAWN_FIGURES_COUNT];
+Point		centers[DRAWN_FIGURES_COUNT];
 
 bool init()
 {
@@ -132,10 +136,16 @@ void init_SRT_matrices() {
 	float xT = USE_SECTION_WINDOW ? XT_START : RADIUS;
 	float yT = USE_SECTION_WINDOW ? YT_START : RADIUS;
 	for (int i = 0; i < DRAWN_FIGURES_COUNT; i++) {
-		set_S_values(XS_START, YS_START, i);
+		set_S_values(S_START, S_START, i);
 		set_R_values(ANGLE_START, i);
 		set_T_values(xT, yT, i);
-
+		// Seconary info init
+		angles[i] = ANGLE_START;
+		scales[i] = S_START;
+		centers[i].x = xT;
+		centers[i].y = yT;
+		side_count[i] = START_SIDE_COUNT;
+		nested_figure_count[i] = USE_SECTION_WINDOW && i == 0 ? 0 : START_FIGURE_COUNT;
 		if (USE_SECTION_WINDOW) {
 			xT += 25;
 			yT += 25;
@@ -220,20 +230,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			bool quit = false;
 
 			Matrix mtrx_finals[DRAWN_FIGURES_COUNT];
-
-			int nested_figure_count = START_FIGURE_COUNT;
-			side_count = START_SIDE_COUNT;
-
-			// Secondary info about figures
-			int angles[DRAWN_FIGURES_COUNT] = { ANGLE_START };
-			float scales[DRAWN_FIGURES_COUNT] = { XS_START };
-			Point centers[DRAWN_FIGURES_COUNT];
-			for (int i = 0; i < DRAWN_FIGURES_COUNT; i++) {
-				centers[i].x = XT_START;
-				centers[i].y = YT_START;
-			}
 			float step_x, step_y;
-
 			int figure_count = 0;
 			bool draw_inside = true;
 			while (!quit) {
@@ -265,36 +262,36 @@ int _tmain(int argc, _TCHAR* argv[])
 							break;
 						// Sides count changing
 						case SDL_SCANCODE_Q:
-							if (side_count > MIN_SIDE_COUNT)
-								side_count--;
-							printf("Side count = %d\n", side_count);
+							if (side_count[figure_count] > MIN_SIDE_COUNT)
+								side_count[figure_count]--;
+							printf("Side count = %d\n", side_count[figure_count]);
 							break;
 						case SDL_SCANCODE_W:
-							if (side_count < MAX_SIDE_COUNT)
-								side_count++;
-							printf("Side count = %d\n", side_count);
+							if (side_count[figure_count] < MAX_SIDE_COUNT)
+								side_count[figure_count]++;
+							printf("Side count = %d\n", side_count[figure_count]);
 							break;
 						// Figure count changing
 						case SDL_SCANCODE_A:
-							if (nested_figure_count > MIN_FIGURE_COUNT)
-								nested_figure_count--;
-							printf("Nested figure count = %d\n", nested_figure_count);
+							if (nested_figure_count[figure_count] > MIN_FIGURE_COUNT)
+								nested_figure_count[figure_count]--;
+							printf("Nested figure count = %d\n", nested_figure_count[figure_count]);
 							break;
 						case SDL_SCANCODE_S:
-							if (nested_figure_count < MAX_FIGURE_COUNT)
-								nested_figure_count++;
-							printf("Nested figure count = %d\n", nested_figure_count);
+							if (nested_figure_count[figure_count] < MAX_FIGURE_COUNT)
+								nested_figure_count[figure_count]++;
+							printf("Nested figure count = %d\n", nested_figure_count[figure_count]);
 							break;
 						// Scaling
 						case SDL_SCANCODE_SLASH:
 							scales[figure_count] += STEP_S;
-							set_S_values(XS_START + STEP_S, YS_START + STEP_S, figure_count);
+							set_S_values(S_START + STEP_S, S_START + STEP_S, figure_count);
 							printf("Current scale = %f\n", scales[figure_count]);
 							target_mtrx_count = SCL;
 							break;
 						case SDL_SCANCODE_PERIOD:
 							scales[figure_count] -= STEP_S;
-							set_S_values(XS_START - STEP_S, YS_START - STEP_S, figure_count);
+							set_S_values(S_START - STEP_S, S_START - STEP_S, figure_count);
 							printf("Current scale = %f\n", scales[figure_count]);
 							target_mtrx_count = SCL;
 							break;
@@ -367,7 +364,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				for (int i = 0; i < DRAWN_FIGURES_COUNT; i++)
 					mtrx_finals[i] = mtrx[i][FIN];
-				draw(loadedSurface, mtrx_finals, nested_figure_count, draw_inside);
+				draw(loadedSurface, mtrx_finals, draw_inside);
 
 				SDL_UpdateTexture(gTexture, NULL, loadedSurface->pixels, loadedSurface->pitch);
 				SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
