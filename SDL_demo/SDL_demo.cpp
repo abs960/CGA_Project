@@ -21,37 +21,38 @@ SDL_Surface* loadedSurface = NULL;
 Matrix mtrx[DRAWN_FIGURES_COUNT][4] = { NULL };
 
 			// Matrices counts
-const int	SCL = 0,
-			ROT = 1,
-			TRS = 2,
-			FIN = 3,
-			// Side count limits
-			MAX_SIDE_COUNT = 30,
-			MIN_SIDE_COUNT = 3, 
-			START_SIDE_COUNT = 4,
-			// Nested figure count limits
-			MAX_FIGURE_COUNT = 50, 
-			MIN_FIGURE_COUNT = 2,
-			START_FIGURE_COUNT = 9;
+const int		SCL = 0,
+				ROT = 1,
+				TRS = 2,
+				FIN = 3,
+				// Side count limits
+				MAX_SIDE_COUNT = 30,
+				MIN_SIDE_COUNT = 3, 
+				START_SIDE_COUNT = 4,
+				// Nested figure count limits
+				MAX_FIGURE_COUNT = 50, 
+				MIN_FIGURE_COUNT = 2,
+				START_FIGURE_COUNT = 9;
 
 			// Matrices initial values
-const float S_START = 1,
-			ANGLE_START = 0, 
-			XT_START = SCREEN_WIDTH / 2, 
-			YT_START = SCREEN_HEIGHT / 2, 
-			// Delta values for matrices
-			STEP_S = 0.01,
-			STEP_T = 3,
-			STEP_R = 1;
+const float		S_START = 1,
+				ANGLE_START = 0, 
+				XT_START = SCREEN_WIDTH / 2, 
+				YT_START = SCREEN_HEIGHT / 2, 
+				// Delta values for matrices
+				STEP_S = 0.01,
+				STEP_T = 3,
+				STEP_R = 1;
 
-extern int	side_count[DRAWN_FIGURES_COUNT];
-extern int	nested_figure_count[DRAWN_FIGURES_COUNT];
-extern Uint32 colours[DRAWN_FIGURES_COUNT];
+// Extern global variables from draw.cpp
+extern int		figures_side_count[DRAWN_FIGURES_COUNT];
+extern int		nested_figure_count[DRAWN_FIGURES_COUNT];
+extern Uint32	colours[DRAWN_FIGURES_COUNT];
 
 // Secondary info about figures
-int			angles[DRAWN_FIGURES_COUNT];
-float		scales[DRAWN_FIGURES_COUNT];
-Point		centers[DRAWN_FIGURES_COUNT];
+int				angles[DRAWN_FIGURES_COUNT];
+float			scales[DRAWN_FIGURES_COUNT];
+Point			centers[DRAWN_FIGURES_COUNT];
 
 bool init()
 {
@@ -63,7 +64,7 @@ bool init()
 	}
 	else
 	{
-		gWindow = SDL_CreateWindow("AKG Lab", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+		gWindow = SDL_CreateWindow("CGA", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
 			SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
@@ -126,10 +127,9 @@ void set_T_values(float xT, float yT, int figure_count) {
 }
 
 void init_colours() {
-	colours[0] = 0x00FF0000;
-	int start = USE_SECTION_WINDOW ? 1 : 0;
-	for (int i = start; i < DRAWN_FIGURES_COUNT; i++) 
-		colours[i] = 0x0000FF00;
+	colours[0] = USE_SECTION_WINDOW ? COLOUR_BLUE : COLOUR_GREEN;
+	for (int i = 1; i < DRAWN_FIGURES_COUNT; i++) 
+		colours[i] = COLOUR_GREEN;
 }
 
 void init_SRT_matrices() {
@@ -144,18 +144,18 @@ void init_SRT_matrices() {
 		scales[i] = S_START;
 		centers[i].x = xT;
 		centers[i].y = yT;
-		side_count[i] = START_SIDE_COUNT;
+		figures_side_count[i] = START_SIDE_COUNT;
 		nested_figure_count[i] = USE_SECTION_WINDOW && i == 0 ? 0 : START_FIGURE_COUNT;
 		if (USE_SECTION_WINDOW) {
 			xT += 25;
 			yT += 25;
 		} else {
 			xT += RADIUS * 1.5;
-			if (xT > SCREEN_WIDTH - RADIUS - 1) {
+			if (xT > SCREEN_WIDTH - (RADIUS * 0.75) - 1) {
 				xT = RADIUS;
 				yT += RADIUS * 1.5;
-				if (yT > SCREEN_HEIGHT - RADIUS - 1)
-				yT = RADIUS;
+				if (yT > SCREEN_HEIGHT - (RADIUS * 0.75) - 1)
+					yT = RADIUS;
 			}
 		}		
 	}
@@ -262,16 +262,16 @@ int _tmain(int argc, _TCHAR* argv[])
 							break;
 						// Sides count changing
 						case SDL_SCANCODE_Q:
-							if (side_count[figure_count] > MIN_SIDE_COUNT)
-								side_count[figure_count]--;
-							printf("Side count = %d\n", side_count[figure_count]);
+							if (figures_side_count[figure_count] > MIN_SIDE_COUNT)
+								figures_side_count[figure_count]--;
+							printf("Side count = %d\n", figures_side_count[figure_count]);
 							break;
 						case SDL_SCANCODE_W:
-							if (side_count[figure_count] < MAX_SIDE_COUNT)
-								side_count[figure_count]++;
-							printf("Side count = %d\n", side_count[figure_count]);
+							if (figures_side_count[figure_count] < MAX_SIDE_COUNT)
+								figures_side_count[figure_count]++;
+							printf("Side count = %d\n", figures_side_count[figure_count]);
 							break;
-						// Figure count changing
+						// Nested figure count changing
 						case SDL_SCANCODE_A:
 							if (nested_figure_count[figure_count] > MIN_FIGURE_COUNT)
 								nested_figure_count[figure_count]--;
@@ -299,8 +299,8 @@ int _tmain(int argc, _TCHAR* argv[])
 						case SDL_SCANCODE_RIGHT:
 							step_x = STEP_T * cos(RAD(angles[figure_count]));
 							step_y = -STEP_T * sin(RAD(angles[figure_count]));
-							centers[figure_count].x += step_x;
-							centers[figure_count].y += step_y;
+							centers[figure_count].x += round(step_x);
+							centers[figure_count].y += round(step_y);
 							set_T_values(step_x, step_y, figure_count);
 							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n", 
 								   centers[figure_count].x, centers[figure_count].y);
@@ -309,8 +309,8 @@ int _tmain(int argc, _TCHAR* argv[])
 						case SDL_SCANCODE_LEFT:
 							step_x = -STEP_T * cos(RAD(angles[figure_count]));
 							step_y = STEP_T * sin(RAD(angles[figure_count]));
-							centers[figure_count].x += step_x;
-							centers[figure_count].y += step_y;
+							centers[figure_count].x += round(step_x);
+							centers[figure_count].y += round(step_y);
 							set_T_values(step_x, step_y, figure_count);
 							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n", 
 								   centers[figure_count].x, centers[figure_count].y);
@@ -319,8 +319,8 @@ int _tmain(int argc, _TCHAR* argv[])
 						case SDL_SCANCODE_DOWN:
 							step_x = STEP_T * sin(RAD(angles[figure_count]));
 							step_y = STEP_T * cos(RAD(angles[figure_count]));
-							centers[figure_count].x += step_x;
-							centers[figure_count].y += step_y;
+							centers[figure_count].x += round(step_x);
+							centers[figure_count].y += round(step_y);
 							set_T_values(step_x, step_y, figure_count);
 							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n", 
 								   centers[figure_count].x, centers[figure_count].y);
@@ -329,8 +329,8 @@ int _tmain(int argc, _TCHAR* argv[])
 						case SDL_SCANCODE_UP:
 							step_x = -STEP_T * sin(RAD(angles[figure_count]));
 							step_y = -STEP_T * cos(RAD(angles[figure_count]));
-							centers[figure_count].x += step_x;
-							centers[figure_count].y += step_y;
+							centers[figure_count].x += round(step_x);
+							centers[figure_count].y += round(step_y);
 							set_T_values(step_x, step_y, figure_count);
 							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n", 
 								   centers[figure_count].x, centers[figure_count].y);
@@ -360,7 +360,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				SDL_RenderClear(gRenderer);
 
 				// Clearing the surface
-				SDL_FillRect(loadedSurface, NULL, 0x00000000);
+				SDL_FillRect(loadedSurface, NULL, COLOUR_BLACK);
 
 				for (int i = 0; i < DRAWN_FIGURES_COUNT; i++)
 					mtrx_finals[i] = mtrx[i][FIN];
