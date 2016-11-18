@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Matrix.h"
+#include "Point.h"
 
 #define RAD(angle) ((angle) * M_PI / 180)
 #define NEXT(cur, max) (((cur) + 1) % (max))
@@ -26,41 +27,6 @@ const bool	USE_SECTION_WINDOW = DRAWN_FIGURES_COUNT <= HOW_MUCH_TO_DRAW_WITH_SEC
 // Used to compensate for possible mistakes in float type
 const float	ALMOST_ZERO = 0.000001;
 
-struct Point {
-	float x;
-	float y;
-
-	Point(float x, float y) {
-		this->x = x;
-		this->y = y;
-	}
-
-	Point() : x(0), y(0) {}
-
-	Point operator+(Point p) const {
-		return Point(x + p.x, y + p.y);
-	}
-
-	Point operator-(Point p) const {
-		return Point(x - p.x, y - p.y);
-	}
-
-	Point operator*(float m) const {
-		return Point(m * x, m * y);
-	}
-
-	Point operator/(float d) const {
-		return Point(x / d, y / d);
-	}
-
-	bool operator==(Point p) const {
-		return x == p.x && y == p.y;
-	}
-
-	bool operator!=(Point p) const {
-		return x != p.x || y != p.y;
-	}
-};
 struct Line {
 	Point start;
 	Point finish;

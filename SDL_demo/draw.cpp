@@ -53,8 +53,8 @@ void init_start_coordinates(Point* start, int side_count, int radius, Matrix mtr
 	}
 }
 
-void swap(float *first, float *second) {
-	float tmp = *first;
+void swap(double *first, double *second) {
+	double tmp = *first;
 	*first = *second;
 	*second = tmp;
 }
