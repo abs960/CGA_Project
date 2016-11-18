@@ -18,6 +18,17 @@ Point::Point(const Point & copy) {
 
 Point::~Point() {}
 
+Point & Point::operator=(const Point& other) {
+	if (this == &other)
+		return (*this);
+
+	x = other.x;
+	y = other.y;
+	z = other.z;
+
+	return (*this);
+}
+
 Point Point::operator+(Point p) {
 	return Point(x + p.x, y + p.y, z + p.z);
 }

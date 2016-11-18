@@ -4,15 +4,17 @@
 
 typedef class Point {
 public:
-	double x;
-	double y;
-	double z;
+	int x;
+	int y;
+	int z;
 
 	Point();
 	Point(double x, double y);
 	Point(double x, double y, double z);
 	Point(const Point& copy);
 	~Point();
+
+	Point& operator=(const Point& other);
 
 	Point operator+(Point p);
 	Point& operator+=(Point p);
