@@ -1,27 +1,16 @@
 #include "Line.h"
 
-Line::Line() : Line(Point(), Point()) {}
+Line::Line() : Line(Colour()) {}
 
-Line::Line(Point start, Point finish) {
-	this->start = start;
-	this->finish = finish;
+Line::Line(Colour colour) {
+	this->colour = colour;
 }
 
 Line::Line(const Line & copy) {
-	start = copy.start;
-	finish = copy.finish;
+	colour = copy.colour;
 }
 
-Line::~Line() {
-}
-
-Point Line::get_start() {
-	return start;
-}
-
-Point Line::get_finish() {
-	return finish;
-}
+Line::~Line() {}
 
 Colour Line::get_colour() {
 	return colour;

@@ -1,6 +1,6 @@
 #include "Colour.h"
 
-Colour::Colour() : Colour(Colour::COLOUR_BLACK) {}
+Colour::Colour() : Colour(Colour::COLOUR_GREEN) {}
 
 Colour::Colour(unsigned int red, unsigned int green, unsigned int blue) 
 	: Colour(RGB32(red, green, blue)) {}
