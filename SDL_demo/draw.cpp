@@ -3,10 +3,9 @@
 #include "Point.h"
 #include "Line.h"
 #include "BrezenheimLine.h"
+#include "WuLine.h"
 
 Point recount_point(Point point, Matrix mtrxF);
-Uint32 change_colour(Uint32 base, float intensity);
-Uint32 change_colour_ycbcr(Uint32 base, float intensity);
 
 const int	MULTIPLICITY = 3;
 
@@ -48,46 +47,6 @@ void init_start_coordinates(Point* start, int side_count, int radius, Matrix mtr
 	}
 }
 
-void swap(double *first, double *second) {
-	double tmp = *first;
-	*first = *second;
-	*second = tmp;
-}
-
-void draw_wu_point(bool more_vertical, SDL_Surface *s, int x, int y, float intensity, Uint32 colour) {
-	Uint32 new_colour = change_colour(colour, intensity);
-	if (more_vertical) 
-		put_pixel32(s, y, x, new_colour);
-	else 
-		put_pixel32(s, x, y, new_colour);
-}
-
-//void wu_line(SDL_Surface *s, Line line, Uint32 colour) {
-//	bool more_vertical = abs(line.finish.y - line.start.y) > abs(line.finish.x - line.start.x);
-//	if (more_vertical) {
-//		swap(&line.start.x, &line.start.y);
-//		swap(&line.finish.x, &line.finish.y);
-//	}
-//	if (line.start.x > line.finish.x) {
-//		swap(&line.start.x, &line.finish.x);
-//		swap(&line.start.y, &line.finish.y);
-//	}
-//
-//	draw_wu_point(more_vertical, s, line.start.x, line.start.y, 1, colour);
-//	draw_wu_point(more_vertical, s, line.finish.x, line.finish.y, 1, colour);
-//	float dx = line.finish.x - line.start.x;
-//	float dy = line.finish.y - line.start.y;
-//	float k = dy / dx;
-//	float y = line.start.y + k;
-//	for (int x = line.start.x + 1; x <= line.finish.x - 1; x++) {
-//		int y_int = floor(y);
-//		float intensity = y - y_int;
-//		draw_wu_point(more_vertical, s, x, y_int, 1 - intensity, colour);
-//		draw_wu_point(more_vertical, s, x, y_int + 1, intensity, colour);
-//		y += k;
-//	}
-//}
-
 float scalar_mult(Point p1, Point p2) {
 	return p1.x * p2.x + p1.y * p2.y;
 }
@@ -127,7 +86,7 @@ void cyrus_beck_line(SDL_Surface *s, Point start, Point finish, Point *section_w
 		}
 		t_high = min(t, t_high);
 	}
-	BrezenheimLine result = BrezenheimLine(Colour(colour));
+	WuLine result = WuLine(Colour(colour));
 	if (t_low <= t_high) {
 		Point lower_point = start + (finish - start) * t_low;
 		Point higher_point = start + (finish - start) * t_high;
@@ -151,7 +110,7 @@ void draw_figure(SDL_Surface *s, Point* points, Point* section_window,
 		if (USE_SECTION_WINDOW) 
 			cyrus_beck_line(s, points[i], points[NEXT(i, side_count)], section_window, draw_inside, colour);
 		else {
-			BrezenheimLine l = BrezenheimLine(Colour(colour));
+			WuLine l = WuLine(Colour(colour));
 			l.draw(s, points[i], points[NEXT(i, side_count)]);
 		}
 	}
@@ -176,7 +135,7 @@ void recount_coordinates(Point* coordinates, int side_count, float side_separato
 
 void draw_section_window(SDL_Surface *s, Point* points, int side_count, Uint32 colour) {
 	for (int i = 0; i < side_count; i++) {
-		BrezenheimLine line = BrezenheimLine(Colour(colour));
+		WuLine line = WuLine(Colour(colour));
 		line.draw(s, points[i], points[NEXT(i, side_count)]);
 	}
 }
@@ -189,35 +148,6 @@ Point recount_point(Point point, Matrix mtrx_final) {
 	std::vector<double> result = mtrx_final * counted_coordinates;
 	Point new_point = Point(result[0], result[1]);
 	return new_point;
-}
-
-Uint32 change_colour_ycbcr(Uint32 base, float intensity) {
-	if (intensity == 0)
-		return 0;
-	// Getting original RGB components
-	int r = ((base & 0xFF0000) >> 10);
-	int g = ((base & 0xFF00) >> 8);
-	int b = (base & 0xFF);
-	// Converting RGB to YCbCr
-	float y = 0.299 * r + 0.587 * g + 0.114 * b;/*
-	float cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
-	float cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;*/
-	float cb = 0;
-	float cr = 0;
-	// Modifying the intensity
-	y *= intensity;
-	// Converting back to RGB
-	r = y + 1.402 * (cr - 128);
-	g = y - 0.344136 * (cb - 128) - 0.714136 * (cr - 128);
-	b = y + 1.772 * (cb - 128);
-	return RGB32(r, g, b);
-}
-
-Uint32 change_colour(Uint32 base, float intensity) {
-	int r = ((base & 0xFF0000) >> 10) * intensity;
-	int g = ((base & 0xFF00) >> 8) * intensity;
-	int b = (base & 0xFF) * intensity;
-	return RGB32(r, g, b);
 }
 
 void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_inside)
