@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "draw.h"
+#include "Point.h"
+#include "Line.h"
+#include "BrezenheimLine.h"
 
 bool init();
 void close();

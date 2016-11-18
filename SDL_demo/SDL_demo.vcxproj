@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BrezenheimLine.h" />
     <ClInclude Include="Colour.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="Line.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BrezenheimLine.cpp" />
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="Line.cpp" />

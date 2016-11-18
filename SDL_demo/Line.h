@@ -3,9 +3,10 @@
 #include "Point.h"
 #include "SDL.h"
 #include "Colour.h"
+#include "draw.h"
 
 class Line {
-private:
+protected:
 	Colour colour;
 public:
 	Line();

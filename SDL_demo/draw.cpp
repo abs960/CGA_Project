@@ -1,6 +1,8 @@
 ﻿#include "draw.h"
-#include "stdafx.h"
 #include "math.h"
+#include "Point.h"
+#include "Line.h"
+#include "BrezenheimLine.h"
 
 Point recount_point(Point point, Matrix mtrxF);
 Uint32 change_colour(Uint32 base, float intensity);
@@ -15,13 +17,8 @@ Uint32		colours[DRAWN_FIGURES_COUNT] = { 0x0000FF00 };
 
 int			sect_wnd_side_count;
 
-void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 colour)
-{
+void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 colour) {
 	assert(NULL != surface);
-	/*assert(x > 0);
-	assert(y > 0);
-	assert(x < SCREEN_WIDTH);
-	assert(y < SCREEN_HEIGHT);*/
 	if (x < 0 || x > SCREEN_WIDTH ||
 		y < 0 || y > SCREEN_HEIGHT)
 		return;
@@ -30,13 +27,11 @@ void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 colour)
 	pixels[(y * surface->w) + x] = colour;
 }
 
-Uint32 get_pixel32(SDL_Surface *surface, int x, int y)
-{
+Uint32 get_pixel32(SDL_Surface *surface, int x, int y) {
 	assert(NULL != surface);
-	assert(x > 0);
-	assert(y > 0);
-	assert(x < SCREEN_WIDTH);
-	assert(y < SCREEN_HEIGHT);
+	if (x < 0 || x > SCREEN_WIDTH ||
+		y < 0 || y > SCREEN_HEIGHT)
+		return -1;
 
 	Uint32 *pixels = (Uint32 *)surface->pixels;
 	return pixels[(y * surface->w) + x];
@@ -67,78 +62,46 @@ void draw_wu_point(bool more_vertical, SDL_Surface *s, int x, int y, float inten
 		put_pixel32(s, x, y, new_colour);
 }
 
-void wu_line(SDL_Surface *s, Line line, Uint32 colour) {
-	bool more_vertical = abs(line.finish.y - line.start.y) > abs(line.finish.x - line.start.x);
-	if (more_vertical) {
-		swap(&line.start.x, &line.start.y);
-		swap(&line.finish.x, &line.finish.y);
-	}
-	if (line.start.x > line.finish.x) {
-		swap(&line.start.x, &line.finish.x);
-		swap(&line.start.y, &line.finish.y);
-	}
-
-	draw_wu_point(more_vertical, s, line.start.x, line.start.y, 1, colour);
-	draw_wu_point(more_vertical, s, line.finish.x, line.finish.y, 1, colour);
-	float dx = line.finish.x - line.start.x;
-	float dy = line.finish.y - line.start.y;
-	float k = dy / dx;
-	float y = line.start.y + k;
-	for (int x = line.start.x + 1; x <= line.finish.x - 1; x++) {
-		int y_int = floor(y);
-		float intensity = y - y_int;
-		draw_wu_point(more_vertical, s, x, y_int, 1 - intensity, colour);
-		draw_wu_point(more_vertical, s, x, y_int + 1, intensity, colour);
-		y += k;
-	}
-}
-
-void brezenheim_line(SDL_Surface *s, Line line, Uint32 colour) {
-	int delta_x = abs(line.finish.x - line.start.x);
-	int delta_y = abs(line.finish.y - line.start.y);
-	int step_x = line.finish.x >= line.start.x ? 1 : -1;
-	int step_y = line.finish.y >= line.start.y ? 1 : -1;
-	if (delta_y <= delta_x) {
-		int d = (delta_y << 1) - delta_x; 
-		int d1 = delta_y << 1;
-		int d2 = (delta_y - delta_x) << 1;
-		put_pixel32(s, line.start.x, line.start.y, colour);
-		for (int x = line.start.x + step_x, y = line.start.y, i = 1; i <= delta_x; i++, x += step_x) {
-			if (d > 0) {
-				d += d2; 
-				y += step_y;
-			} else d += d1;
-			put_pixel32(s, x, y, colour);
-		}
-	} else {
-		int d = (delta_x << 1) - delta_y; 
-		int d1 = delta_x << 1;
-		int d2 = (delta_x - delta_y) << 1;
-		put_pixel32(s, line.start.x, line.start.y, colour);
-		for (int x = line.start.x, y = line.start.y + step_y, i = 1; i <= delta_y; i++, y += step_y) {
-			if (d > 0) {
-				d += d2; 
-				x += step_x;
-			} else
-				d += d1;
-			put_pixel32(s, x, y, colour);
-		}
-	}
-}
+//void wu_line(SDL_Surface *s, Line line, Uint32 colour) {
+//	bool more_vertical = abs(line.finish.y - line.start.y) > abs(line.finish.x - line.start.x);
+//	if (more_vertical) {
+//		swap(&line.start.x, &line.start.y);
+//		swap(&line.finish.x, &line.finish.y);
+//	}
+//	if (line.start.x > line.finish.x) {
+//		swap(&line.start.x, &line.finish.x);
+//		swap(&line.start.y, &line.finish.y);
+//	}
+//
+//	draw_wu_point(more_vertical, s, line.start.x, line.start.y, 1, colour);
+//	draw_wu_point(more_vertical, s, line.finish.x, line.finish.y, 1, colour);
+//	float dx = line.finish.x - line.start.x;
+//	float dy = line.finish.y - line.start.y;
+//	float k = dy / dx;
+//	float y = line.start.y + k;
+//	for (int x = line.start.x + 1; x <= line.finish.x - 1; x++) {
+//		int y_int = floor(y);
+//		float intensity = y - y_int;
+//		draw_wu_point(more_vertical, s, x, y_int, 1 - intensity, colour);
+//		draw_wu_point(more_vertical, s, x, y_int + 1, intensity, colour);
+//		y += k;
+//	}
+//}
 
 float scalar_mult(Point p1, Point p2) {
 	return p1.x * p2.x + p1.y * p2.y;
 }
 
-void cyrus_beck_line(SDL_Surface *s, Line line, Point *section_window, bool is_drawing_inside, Uint32 colour) {
+void cyrus_beck_line(SDL_Surface *s, Point start, Point finish, Point *section_window, bool is_drawing_inside, Uint32 colour) {
 	float t_low = 0, t_high = 1, t;
-	Point directrix = line.finish - line.start;
+	Point directrix = finish - start;
 	for (int i = 0; i < sect_wnd_side_count; i++) {
-		Line sect_wnd_side = Line(section_window[i], section_window[NEXT(i, sect_wnd_side_count)]);
-		Point normal = Point(sect_wnd_side.start.y - sect_wnd_side.finish.y, 
-							 sect_wnd_side.finish.x - sect_wnd_side.start.x);
-		Point sect_wnd_side_point = sect_wnd_side.start;
-		Point w = line.start - sect_wnd_side_point;
+		Point sect_wnd_side_start = section_window[i];
+		Point sect_wnd_side_finish = section_window[NEXT(i, sect_wnd_side_count)];
+		Point normal = Point(sect_wnd_side_start.y - sect_wnd_side_finish.y, 
+							 sect_wnd_side_finish.x - sect_wnd_side_start.x);
+		Point sect_wnd_side_point = sect_wnd_side_start;
+		Point w = start - sect_wnd_side_point;
 		float d_scalar = scalar_mult(directrix, normal);
 		float w_scalar = scalar_mult(w, normal);
 
@@ -164,36 +127,33 @@ void cyrus_beck_line(SDL_Surface *s, Line line, Point *section_window, bool is_d
 		}
 		t_high = min(t, t_high);
 	}
+	BrezenheimLine result = BrezenheimLine(Colour(colour));
 	if (t_low <= t_high) {
-		Point lower_point = line.start + (line.finish - line.start) * t_low;
-		Point higher_point = line.start + (line.finish - line.start) * t_high;
-		Line result;
+		Point lower_point = start + (finish - start) * t_low;
+		Point higher_point = start + (finish - start) * t_high;
 		if (is_drawing_inside) {
-			result = Line(lower_point, higher_point);
-			wu_line(s, result, colour);
+			result.draw(s, lower_point, higher_point);
 		} else {
-			if (line.start != lower_point) {
-				result = Line(line.start, lower_point);
-				wu_line(s, result, colour);
+			if (start != lower_point) {
+				result.draw(s, start, lower_point);
 			}
-			if (line.finish != higher_point) {
-				result = Line(higher_point, line.finish);
-				wu_line(s, result, colour);
+			if (finish != higher_point) {
+				result.draw(s, higher_point, finish);
 			}
 		}
 	} else if (!is_drawing_inside)
-		wu_line(s, line, colour);
+		result.draw(s, start, finish);
 }
 
 void draw_figure(SDL_Surface *s, Point* points, Point* section_window, 
 				 int side_count, bool draw_inside, Uint32 colour) {
 	for (int i = 0; i < side_count; i++) {
-		Line figure_side = Line(points[i], points[NEXT(i, side_count)]);
-
 		if (USE_SECTION_WINDOW) 
-			cyrus_beck_line(s, figure_side, section_window, draw_inside, colour);
-		else 
-			wu_line(s, figure_side, colour);
+			cyrus_beck_line(s, points[i], points[NEXT(i, side_count)], section_window, draw_inside, colour);
+		else {
+			BrezenheimLine l = BrezenheimLine(Colour(colour));
+			l.draw(s, points[i], points[NEXT(i, side_count)]);
+		}
 	}
 }
 
@@ -216,13 +176,16 @@ void recount_coordinates(Point* coordinates, int side_count, float side_separato
 
 void draw_section_window(SDL_Surface *s, Point* points, int side_count, Uint32 colour) {
 	for (int i = 0; i < side_count; i++) {
-		Line line = Line(points[i], points[NEXT(i, side_count)]);
-		wu_line(s, line, colour);
+		BrezenheimLine line = BrezenheimLine(Colour(colour));
+		line.draw(s, points[i], points[NEXT(i, side_count)]);
 	}
 }
 
 Point recount_point(Point point, Matrix mtrx_final) {
-	std::vector<double> counted_coordinates( { point.x, point.y, 1 } );
+	std::vector<double> counted_coordinates;
+	counted_coordinates.push_back(point.x);
+	counted_coordinates.push_back(point.y);
+	counted_coordinates.push_back(1);
 	std::vector<double> result = mtrx_final * counted_coordinates;
 	Point new_point = Point(result[0], result[1]);
 	return new_point;
