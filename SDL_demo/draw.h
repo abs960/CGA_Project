@@ -2,6 +2,7 @@
 #define DRAW_H
 
 #include "stdafx.h"
+#include "Matrix.h"
 
 #define RAD(angle) ((angle) * M_PI / 180)
 #define NEXT(cur, max) (((cur) + 1) % (max))
@@ -25,7 +26,6 @@ const bool	USE_SECTION_WINDOW = DRAWN_FIGURES_COUNT <= HOW_MUCH_TO_DRAW_WITH_SEC
 // Used to compensate for possible mistakes in float type
 const float	ALMOST_ZERO = 0.000001;
 
-typedef float** Matrix;
 struct Point {
 	float x;
 	float y;
@@ -74,7 +74,5 @@ struct Line {
 };
 
 void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_inside);
-void mult_mtrx(Matrix left, Matrix right, Matrix result);
-void mult_mtrx_vector(Matrix mtrx, float* vector, float* result);
 
 #endif

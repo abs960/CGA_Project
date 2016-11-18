@@ -42,23 +42,6 @@ Uint32 get_pixel32(SDL_Surface *surface, int x, int y)
 	return pixels[(y * surface->w) + x];
 }
 
-void mult_mtrx(Matrix left, Matrix right, Matrix result) {
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			result[i][j] = 0;
-			for (int k = 0; k < 3; k++)
-				result[i][j] += left[i][k] * right[k][j];
-		}
-}
-
-void mult_mtrx_vector(Matrix mtrx, float* vector, float* result) {
-	for (int i = 0; i < 3; i++) {
-		result[i] = 0;
-		for (int j = 0; j < 3; j++)
-			result[i] += mtrx[i][j] * vector[j];
-	}
-}
-
 void init_start_coordinates(Point* start, int side_count, int radius, Matrix mtrx_final) {
 	int start_angle = abs(90 - (360 / side_count) / 2);
 	for (int i = 0; i < side_count; i++) {
@@ -239,11 +222,9 @@ void draw_section_window(SDL_Surface *s, Point* points, int side_count, Uint32 c
 }
 
 Point recount_point(Point point, Matrix mtrx_final) {
-	float *result = (float*)calloc(3, sizeof(float));
-	float counted_coordinates[3] = { point.x, point.y, 1 };
-	mult_mtrx_vector(mtrx_final, counted_coordinates, result);
+	std::vector<double> counted_coordinates( { point.x, point.y, 1 } );
+	std::vector<double> result = mtrx_final * counted_coordinates;
 	Point new_point = Point(result[0], result[1]);
-	free(result);
 	return new_point;
 }
 

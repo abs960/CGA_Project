@@ -18,7 +18,7 @@ SDL_Renderer* gRenderer = NULL;
 SDL_Texture* gTexture = NULL;
 SDL_Surface* loadedSurface = NULL;
 
-Matrix mtrx[DRAWN_FIGURES_COUNT][4] = { NULL };
+Matrix mtrx[DRAWN_FIGURES_COUNT][4];
 
 			// Matrices counts
 const int		SCL = 0,
@@ -105,25 +105,25 @@ void close()
 }
 
 void set_S_values(float xS, float yS, int figure_count) {
-	mtrx[figure_count][SCL][0][0] = xS;
-	mtrx[figure_count][SCL][1][1] = yS;
-	mtrx[figure_count][SCL][2][2] = 1;
+	mtrx[figure_count][SCL].set_element(0, 0, xS);
+	mtrx[figure_count][SCL].set_element(1, 1, yS);
+	mtrx[figure_count][SCL].set_element(2, 2, 1);
 }
 
 void set_R_values(float angle, int figure_count) {
-	mtrx[figure_count][ROT][0][0] = cos(RAD(angle));
-	mtrx[figure_count][ROT][0][1] = -sin(RAD(angle));
-	mtrx[figure_count][ROT][1][0] = sin(RAD(angle));
-	mtrx[figure_count][ROT][1][1] = cos(RAD(angle));
-	mtrx[figure_count][ROT][2][2] = 1;
+	mtrx[figure_count][ROT].set_element(0, 0, cos(RAD(angle)));
+	mtrx[figure_count][ROT].set_element(0, 1, -sin(RAD(angle)));
+	mtrx[figure_count][ROT].set_element(1, 0, sin(RAD(angle)));
+	mtrx[figure_count][ROT].set_element(1, 1, cos(RAD(angle)));
+	mtrx[figure_count][ROT].set_element(2, 2, 1);
 }
 
 void set_T_values(float xT, float yT, int figure_count) {
-	mtrx[figure_count][TRS][0][0] = 1;
-	mtrx[figure_count][TRS][0][2] = xT;
-	mtrx[figure_count][TRS][1][1] = 1;
-	mtrx[figure_count][TRS][1][2] = yT;
-	mtrx[figure_count][TRS][2][2] = 1;
+	mtrx[figure_count][TRS].set_element(0, 0, 1);
+	mtrx[figure_count][TRS].set_element(0, 2, xT);
+	mtrx[figure_count][TRS].set_element(1, 1, 1);
+	mtrx[figure_count][TRS].set_element(1, 2, yT);
+	mtrx[figure_count][TRS].set_element(2, 2, 1);
 }
 
 void init_colours() {
@@ -164,51 +164,32 @@ void init_SRT_matrices() {
 void init_matrices() {
 	init_SRT_matrices();
 
-	Matrix mtrx_tmp = (Matrix)calloc(3, sizeof(float*));
-	for (int i = 0; i < 3; i++)
-		mtrx_tmp[i] = (float*)calloc(3, sizeof(float));
+	Matrix mtrx_tmp = Matrix(3);
 
 	for (int i = 0; i < DRAWN_FIGURES_COUNT; i++) {
-		mult_mtrx(mtrx[i][TRS], mtrx[i][ROT], mtrx_tmp);
-		mult_mtrx(mtrx[i][SCL], mtrx_tmp, mtrx[i][FIN]);
+		mtrx_tmp = mtrx[i][TRS] * mtrx[i][ROT];
+		mtrx[i][FIN] = mtrx[i][SCL] * mtrx_tmp;
 	}
-
-	for (int i = 0; i < 3; i++)
-		free(mtrx_tmp[i]);
-	free(mtrx_tmp);
 }
 
 void alloc_matrices() {
 	for (int i = 0; i < DRAWN_FIGURES_COUNT; i++)
 		for (int j = 0; j < 4; j++) {
-			mtrx[i][j] = (Matrix)calloc(3, sizeof(float*));
-			for (int k = 0; k < 3; k++)
-				mtrx[i][j][k] = (float*)calloc(3, sizeof(float));
+			mtrx[i][j] = Matrix(3);
 		}
 }
 
 void free_matrices() {
-	for (int i = 0; i < DRAWN_FIGURES_COUNT; i++)
+	/*for (int i = 0; i < DRAWN_FIGURES_COUNT; i++)
 		for (int j = 0; j < 4; j++) {
 			for (int k = 0; k < 3; k++)
 				free(mtrx[i][j][k]);
 			free(mtrx[i][j]);
-		}
+		}*/
 }
 
 void recount_F(int target_mtrx_count, int figure_count) {
-	float** mtrx_tmp = (float**)calloc(3, sizeof(float*));
-	for (int i = 0; i < 3; i++)
-		mtrx_tmp[i] = (float*)calloc(3, sizeof(float));
-
-	mult_mtrx(mtrx[figure_count][FIN], mtrx[figure_count][target_mtrx_count], mtrx_tmp);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++)
-			mtrx[figure_count][FIN][i][j] = mtrx_tmp[i][j];
-
-	for (int i = 0; i < 3; i++)
-		free(mtrx_tmp[i]);
-	free(mtrx_tmp);
+	mtrx[figure_count][FIN] *= mtrx[figure_count][target_mtrx_count];
 }
 
 int _tmain(int argc, _TCHAR* argv[])
