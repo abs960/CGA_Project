@@ -4,10 +4,10 @@
 #include "stdafx.h"
 #include "Matrix.h"
 #include "Point.h"
+#include "Line.h"
 
 #define RAD(angle) ((angle) * M_PI / 180)
 #define NEXT(cur, max) (((cur) + 1) % (max))
-#define RGB32(r, g, b) static_cast<uint32_t>((((static_cast<uint32_t>(r) << 8) | g) << 8) | b)
 
 // Colours constants
 const int	COLOUR_BLACK	= 0x00000000,
@@ -26,18 +26,6 @@ const bool	USE_SECTION_WINDOW = DRAWN_FIGURES_COUNT <= HOW_MUCH_TO_DRAW_WITH_SEC
 
 // Used to compensate for possible mistakes in float type
 const float	ALMOST_ZERO = 0.000001;
-
-struct Line {
-	Point start;
-	Point finish;
-
-	Line(Point start, Point finish) {
-		this->start = start;
-		this->finish = finish;
-	}
-
-	Line() : start(Point()), finish(Point()) {}
-};
 
 void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_inside);
 

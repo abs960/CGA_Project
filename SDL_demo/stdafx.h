@@ -12,14 +12,11 @@
 
 
 // TODO: reference additional headers your program requires here
-#include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 #include "SDL.h"
 #include <math.h>
 
-#include <SDL.h>
-#include <stdio.h>
 #include <string>
 #include <assert.h>
 
