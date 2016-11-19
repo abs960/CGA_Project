@@ -88,6 +88,7 @@
     <ClInclude Include="Line.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MatrixShape2D.h" />
+    <ClInclude Include="NestedShape2D.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Shape2D.h" />
     <ClInclude Include="stdafx.h" />
@@ -101,6 +102,7 @@
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixShape2D.cpp" />
+    <ClCompile Include="NestedShape2D.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="SDL_demo.cpp" />
     <ClCompile Include="Shape2D.cpp" />

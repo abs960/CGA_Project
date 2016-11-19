@@ -6,10 +6,9 @@
 #include "WuLine.h"
 #include "Shape2D.h"
 #include "MatrixShape2D.h"
+#include "NestedShape2D.h"
 
 Point recount_point(Point point, Matrix mtrxF);
-
-const int	MULTIPLICITY = 3;
 
 // Extern global variables
 int			figures_side_count[DRAWN_FIGURES_COUNT] = { 4 };
@@ -145,13 +144,6 @@ Point recount_point(Point point, Matrix mtrx_final) {
 	return new_point;
 }
 
-void draw_section_window(SDL_Surface *s, Point* points, int side_count, Uint32 colour) {
-	for (int i = 0; i < side_count; i++) {
-		WuLine line = WuLine(Colour(colour));
-		line.draw(s, points[i], points[NEXT(i, side_count)]);
-	}
-}
-
 void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_inside)
 {
 	sect_wnd_side_count = figures_side_count[0];
@@ -164,8 +156,9 @@ void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_ins
 		init_start_coordinates(section_window, sect_wnd_side_count, sect_wnd_radius, mtrx_finals[0]);
 
 		MatrixShape2D sw = MatrixShape2D(sect_wnd_side_count, sect_wnd_radius);
+		sw.set_colour(Colour(Colour::COLOUR_BLUE));
 		sw.set_matrix(mtrx_finals[0]);
-		sw.set_brush(new WuLine(Colour(Colour::COLOUR_BLUE)));
+		sw.set_brush(new WuLine());
 		sw.draw(s);
 	}
 
@@ -176,12 +169,18 @@ void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_ins
 	}
 
 	for (int i = 0; i < DRAWN_FIGURES_COUNT - sect_wnd_used; i++) {
-		float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / nested_figure_count[i + sect_wnd_used]);
+		NestedShape2D sh = NestedShape2D(figures_side_count[i + sect_wnd_used], RADIUS);
+		sh.set_nested_count(nested_figure_count[i + sect_wnd_used]);
+		sh.set_matrix(mtrx_finals[i + sect_wnd_used]);
+		sh.set_colour(colours[i + sect_wnd_used]);
+		sh.set_brush(new WuLine());
+		sh.draw(s);
+		/*float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / nested_figure_count[i + sect_wnd_used]);
 		float side_separator_coef = tmp_tan / (tmp_tan + 1);
 		for (int j = 0; j < nested_figure_count[i + sect_wnd_used]; j++) {
 			draw_figure(s, coordinates[i], section_window, figures_side_count[i + sect_wnd_used], draw_inside, colours[i + sect_wnd_used]);
 			recount_coordinates(coordinates[i], figures_side_count[i + sect_wnd_used], side_separator_coef);
-		}
+		}*/
 	}
 
 	for (int i = 0; i < DRAWN_FIGURES_COUNT - sect_wnd_used; i++)
