@@ -68,6 +68,10 @@ void Shape2D::draw(SDL_Surface * s) {
 	}
 }
 
+Point Shape2D::get_point(int index) {
+	return points[index];
+}
+
 Shape2D & Shape2D::operator=(const Shape2D & other) {
 	if (&other == this)
 		return (*this);

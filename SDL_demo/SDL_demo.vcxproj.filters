@@ -51,6 +51,12 @@
     <ClInclude Include="NestedShape2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SectionWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CyrusBeckLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -87,6 +93,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NestedShape2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SectionWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CyrusBeckLine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

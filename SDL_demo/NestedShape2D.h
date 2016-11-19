@@ -9,7 +9,7 @@ class NestedShape2D : public MatrixShape2D {
 protected:
 	int nested_count;
 
-	void recount_coordinates(float side_separator_coef);
+	void recount_coordinates(Point* work_points, float side_separator_coef);
 public:
 	NestedShape2D();
 	NestedShape2D(int side_count);

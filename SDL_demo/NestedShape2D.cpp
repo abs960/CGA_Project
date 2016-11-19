@@ -45,14 +45,20 @@ int NestedShape2D::get_nested_count() {
 }
 
 void NestedShape2D::draw(SDL_Surface * s) {
+	Point* work_points = new Point[side_count];
+	for (int i = 0; i < side_count; i++)
+		work_points[i] = points[i];
+
 	brush->set_colour(colour);
 	float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / nested_count);
 	float side_separator_coef = tmp_tan / (tmp_tan + 1);
 	for (int i = 0; i < nested_count; i++) {
 		for (int j = 0; j < side_count; j++)
-			brush->draw(s, points[j], points[NEXT(j, side_count)]);
-		recount_coordinates(side_separator_coef);
+			brush->draw(s, work_points[j], work_points[NEXT(j, side_count)]);
+		recount_coordinates(work_points, side_separator_coef);
 	}
+
+	delete[] work_points;
 }
 
 NestedShape2D & NestedShape2D::operator=(const NestedShape2D & other) {
@@ -74,18 +80,18 @@ NestedShape2D & NestedShape2D::operator=(const NestedShape2D & other) {
 }
 
 
-void NestedShape2D::recount_coordinates(float side_separator_coef) {
+void NestedShape2D::recount_coordinates(Point* work_points, float side_separator_coef) {
 	Point* new_coordinates = new Point[side_count];
 
 	for (int i = 0; i < side_count; i++) {
 		int next = NEXT(i, side_count);
 		new_coordinates[next] = Point(
-			points[i].x + (points[next].x - points[i].x) * side_separator_coef,
-			points[i].y + (points[next].y - points[i].y) * side_separator_coef
+			work_points[i].x + (work_points[next].x - work_points[i].x) * side_separator_coef,
+			work_points[i].y + (work_points[next].y - work_points[i].y) * side_separator_coef
 		);
 	}
 	for (int i = 0; i < side_count; i++) 
-		points[i] = new_coordinates[i];
+		work_points[i] = new_coordinates[i];
 
 	delete[] new_coordinates;
 }

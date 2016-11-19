@@ -32,6 +32,7 @@ public:
 	void set_brush(Line* brush);
 
 	void draw(SDL_Surface* s);
+	Point get_point(int index);
 
 	Shape2D& operator=(const Shape2D& other);
 };
