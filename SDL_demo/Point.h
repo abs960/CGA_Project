@@ -4,9 +4,9 @@
 
 typedef class Point {
 public:
-	int x;
-	int y;
-	int z;
+	float x;
+	float y;
+	float z;
 
 	Point();
 	Point(double x, double y);

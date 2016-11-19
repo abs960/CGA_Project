@@ -4,9 +4,6 @@
 #include "stdafx.h"
 #include "Matrix.h"
 
-#define RAD(angle) ((angle) * M_PI / 180)
-#define NEXT(cur, max) (((cur) + 1) % (max))
-
 // Colours constants
 const int	COLOUR_BLACK	= 0x00000000,
 			COLOUR_WHITE	= 0x00FFFFFF,

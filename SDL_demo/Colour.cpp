@@ -42,6 +42,7 @@ void Colour::change_intensity(double new_intensity) {
 	unsigned int green = get_green() * new_intensity;
 	unsigned int blue = get_blue() * new_intensity;
 	value = RGB32(red, green, blue);
+	intensity = new_intensity;
 }
 
 Colour & Colour::operator=(const Colour & other) {

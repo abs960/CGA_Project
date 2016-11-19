@@ -4,6 +4,8 @@
 #include "Line.h"
 #include "BrezenheimLine.h"
 #include "WuLine.h"
+#include "Shape2D.h"
+#include "MatrixShape2D.h"
 
 Point recount_point(Point point, Matrix mtrxF);
 
@@ -133,13 +135,6 @@ void recount_coordinates(Point* coordinates, int side_count, float side_separato
 	free(new_coordinates);
 }
 
-void draw_section_window(SDL_Surface *s, Point* points, int side_count, Uint32 colour) {
-	for (int i = 0; i < side_count; i++) {
-		WuLine line = WuLine(Colour(colour));
-		line.draw(s, points[i], points[NEXT(i, side_count)]);
-	}
-}
-
 Point recount_point(Point point, Matrix mtrx_final) {
 	std::vector<double> counted_coordinates;
 	counted_coordinates.push_back(point.x);
@@ -148,6 +143,13 @@ Point recount_point(Point point, Matrix mtrx_final) {
 	std::vector<double> result = mtrx_final * counted_coordinates;
 	Point new_point = Point(result[0], result[1]);
 	return new_point;
+}
+
+void draw_section_window(SDL_Surface *s, Point* points, int side_count, Uint32 colour) {
+	for (int i = 0; i < side_count; i++) {
+		WuLine line = WuLine(Colour(colour));
+		line.draw(s, points[i], points[NEXT(i, side_count)]);
+	}
 }
 
 void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_inside)
@@ -160,7 +162,11 @@ void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_ins
 		section_window = (Point*)calloc(sect_wnd_side_count, sizeof(Point));
 		int sect_wnd_radius = RADIUS * 2;
 		init_start_coordinates(section_window, sect_wnd_side_count, sect_wnd_radius, mtrx_finals[0]);
-		draw_section_window(s, section_window, sect_wnd_side_count, colours[0]);
+
+		MatrixShape2D sw = MatrixShape2D(sect_wnd_side_count, sect_wnd_radius);
+		sw.set_matrix(mtrx_finals[0]);
+		sw.set_brush(new WuLine(Colour(Colour::COLOUR_BLUE)));
+		sw.draw(s);
 	}
 
 	Point **coordinates = (Point**)calloc(DRAWN_FIGURES_COUNT - sect_wnd_used, sizeof(Point*));

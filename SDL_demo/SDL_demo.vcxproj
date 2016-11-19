@@ -87,7 +87,9 @@
     <ClInclude Include="draw.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="MatrixShape2D.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Shape2D.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WuLine.h" />
@@ -98,8 +100,10 @@
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="MatrixShape2D.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="SDL_demo.cpp" />
+    <ClCompile Include="Shape2D.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="WuLine.cpp" />
   </ItemGroup>

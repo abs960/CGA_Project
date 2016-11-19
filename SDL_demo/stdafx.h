@@ -20,6 +20,9 @@
 #include <string>
 #include <assert.h>
 
+#define RAD(angle) ((angle) * M_PI / 180)
+#define NEXT(cur, max) (((cur) + 1) % (max))
+
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
