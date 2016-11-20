@@ -37,6 +37,7 @@ void CyrusBeckLine::set_basic_brush(Line * brush) {
 }
 
 void CyrusBeckLine::draw(SDL_Surface * s, Point start, Point finish) {
+	optimize_sections();
 	count_drawing_coef();
 	basic_brush->set_colour(colour);
 	draw_with_section_window(s, start, finish, 0, 0);
@@ -117,15 +118,32 @@ void CyrusBeckLine::draw_with_section_window(SDL_Surface * s, Point start, Point
 
 void CyrusBeckLine::count_drawing_coef() {
 	drawing_coef = 0;
-
-	int inside_count = 0;
-	for (int i = 0; i < section_count; i++)
-		if (sections.at(i).is_transparent())
-			inside_count++;
-
 	if (section_count % 2 == 0) {
 		drawing_coef = sections.at(section_count - 1).is_transparent() ? 2 : 0;
 	} else {
 		drawing_coef = 1;
 	}
+}
+
+void CyrusBeckLine::optimize_sections() {
+	std::vector<int> sections_counts_to_keep;
+	std::vector<SectionWindow> optimized_sections;
+
+	bool prev_transp = sections.at(0).is_transparent();
+	int dif_transp = 0;
+	for (int i = 1; i < section_count; i++) {
+		if (sections.at(i).is_transparent() != prev_transp) {
+			prev_transp = sections.at(i).is_transparent();
+			sections_counts_to_keep.push_back(dif_transp);
+		} 
+		dif_transp = i;
+	}
+	sections_counts_to_keep.push_back(dif_transp);
+
+	for (int i = 0; i < sections_counts_to_keep.size(); i++) {
+		optimized_sections.push_back(sections.at(sections_counts_to_keep.at(i)));
+	}
+
+	section_count = optimized_sections.size();
+	sections = optimized_sections;
 }

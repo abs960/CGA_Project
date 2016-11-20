@@ -15,6 +15,7 @@ protected:
 	float scalar_mult(Vector p1, Vector p2);
 	void draw_with_section_window(SDL_Surface* s, Point start, Point finish, int section_number, int visible_count);
 	void count_drawing_coef();
+	void optimize_sections();
 public:
 	CyrusBeckLine();
 	CyrusBeckLine(Colour colour);
