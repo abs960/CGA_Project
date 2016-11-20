@@ -36,17 +36,46 @@ void CyrusBeckLine::set_basic_brush(Line * brush) {
 	basic_brush = brush;
 }
 
-void cyrus_beck_line(SDL_Surface *s, Point start, Point finish, Point *section_window, bool is_drawing_inside, Uint32 colour);
 void CyrusBeckLine::draw(SDL_Surface * s, Point start, Point finish) {
+	count_drawing_coef();
+	basic_brush->set_colour(colour);
+	draw_with_section_window(s, start, finish, 0, 0);
+}
+
+CyrusBeckLine & CyrusBeckLine::operator=(const CyrusBeckLine & other) {
+	if (&other == this)
+		return (*this);
+
+	colour = other.colour;
+	*basic_brush = *(other.basic_brush);
+	sections = other.sections;
+
+	return (*this);
+}
+
+float CyrusBeckLine::scalar_mult(Vector p1, Vector p2) {
+	return p1.x * p2.x + p1.y * p2.y;
+}
+
+void CyrusBeckLine::draw_with_section_window(SDL_Surface * s, Point start, Point finish, int section_number, int visible_count) {
+	if (start == finish)
+		return;
+	if (section_number == section_count) {
+		if (visible_count == drawing_coef)
+			basic_brush->draw(s, start, finish);
+		return;
+	}
+	bool current_transparency = sections.at(section_number).is_transparent();
+
 	float t_low = 0, t_high = 1, t;
 	Point directrix = finish - start;
-	for (int i = 0; i < sections.at(0).get_side_count(); i++) {
-		Point sect_wnd_side_start = sections.at(0).get_point(i);
-		Point sect_wnd_side_finish = sections.at(0).get_point(NEXT(i, sections.at(0).get_side_count()));
-		Vector normal = Vector(sect_wnd_side_start.y - sect_wnd_side_finish.y,
-							   sect_wnd_side_finish.x - sect_wnd_side_start.x);
-		Point sect_wnd_side_point = sect_wnd_side_start;
-		Vector w = start - sect_wnd_side_point;
+	int current_side_count = sections.at(section_number).get_side_count();
+	for (int i = 0; i < current_side_count; i++) {
+		Point sw_side_start = sections.at(section_number).get_point(i);
+		Point sw_side_finish = sections.at(section_number).get_point(NEXT(i, current_side_count));
+		Vector normal = Vector(sw_side_start.y - sw_side_finish.y,
+							   sw_side_finish.x - sw_side_start.x);
+		Vector w = start - sw_side_start;
 		float d_scalar = scalar_mult(directrix, normal);
 		float w_scalar = scalar_mult(w, normal);
 
@@ -72,34 +101,31 @@ void CyrusBeckLine::draw(SDL_Surface * s, Point start, Point finish) {
 		}
 		t_high = min(t, t_high);
 	}
+
+	int coef = current_transparency ? 1 : -1;
 	if (t_low <= t_high) {
 		Point lower_point = start + (finish - start) * t_low;
 		Point higher_point = start + (finish - start) * t_high;
-		if (sections.at(0).is_transparent()) {
-			basic_brush->draw(s, lower_point, higher_point);
-		} else {
-			if (start != lower_point) {
-				basic_brush->draw(s, start, lower_point);
-			}
-			if (finish != higher_point) {
-				basic_brush->draw(s, higher_point, finish);
-			}
-		}
-	} else if (!sections.at(0).is_transparent())
-		basic_brush->draw(s, start, finish);
+
+		draw_with_section_window(s, start, lower_point, section_number + 1, visible_count - coef);
+		draw_with_section_window(s, lower_point, higher_point, section_number + 1, visible_count + coef);
+		draw_with_section_window(s, higher_point, finish, section_number + 1, visible_count - coef);
+	} else {
+		draw_with_section_window(s, start, finish, section_number + 1, visible_count - coef);
+	}
 }
 
-CyrusBeckLine & CyrusBeckLine::operator=(const CyrusBeckLine & other) {
-	if (&other == this)
-		return (*this);
+void CyrusBeckLine::count_drawing_coef() {
+	drawing_coef = 0;
 
-	colour = other.colour;
-	*basic_brush = *(other.basic_brush);
-	sections = other.sections;
+	int inside_count = 0;
+	for (int i = 0; i < section_count; i++)
+		if (sections.at(i).is_transparent())
+			inside_count++;
 
-	return (*this);
-}
-
-float CyrusBeckLine::scalar_mult(Vector p1, Vector p2) {
-	return p1.x * p2.x + p1.y * p2.y;
+	if (section_count % 2 == 0) {
+		drawing_coef = sections.at(section_count - 1).is_transparent() ? 2 : 0;
+	} else {
+		drawing_coef = 1;
+	}
 }

@@ -20,7 +20,7 @@ const int	DRAWN_FIGURES_COUNT = 2,
 const bool	USE_SECTION_WINDOW = DRAWN_FIGURES_COUNT <= HOW_MUCH_TO_DRAW_WITH_SECTION_WINDOW;
 
 // Used to compensate for possible mistakes in float type
-const float	ALMOST_ZERO = 0.000001;
+const float	ALMOST_ZERO = 0.00000001;
 
 void draw(SDL_Surface *s, Matrix mtrx_finals[DRAWN_FIGURES_COUNT], bool draw_inside);
 void put_pixel32(SDL_Surface *surface, int x, int y, Uint32 colour);

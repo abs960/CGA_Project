@@ -6,11 +6,15 @@
 
 class CyrusBeckLine : public Line {
 protected:
+	int drawing_coef;
+
 	int section_count;
 	std::vector<SectionWindow> sections;
 	Line* basic_brush; 
 
 	float scalar_mult(Vector p1, Vector p2);
+	void draw_with_section_window(SDL_Surface* s, Point start, Point finish, int section_number, int visible_count);
+	void count_drawing_coef();
 public:
 	CyrusBeckLine();
 	CyrusBeckLine(Colour colour);
