@@ -77,11 +77,14 @@ Matrix& Matrix::operator*=(const Matrix& other) {
 }
 
 std::vector<double> Matrix::operator*(const std::vector<double>& v) {
-	std::vector<double> result(v.size(), 0);
+	std::vector<double> result(height, 0);
 
-	for (unsigned i = 0; i < height; i++) 
-		for (unsigned j = 0; j < width; j++) 
-			result[i] += this->elements[i][j] * v[j];
+	for (unsigned i = 0; i < height; i++) {
+		double sum = 0;
+		for (unsigned j = 0; j < v.size(); j++)
+			sum += this->elements[i][j] * v.at(j);
+		result[i] = sum;
+	}
 
 	return result;
 }

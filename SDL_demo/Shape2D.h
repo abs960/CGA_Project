@@ -15,7 +15,7 @@ protected:
 	int radius;
 	int side_count;
 
-	void init_points();
+	virtual void init_points();
 public:
 	Shape2D();
 	Shape2D(int side_count);
@@ -31,7 +31,7 @@ public:
 	int get_radius();
 	void set_brush(Line* brush);
 
-	void draw(SDL_Surface* s);
+	virtual void draw(SDL_Surface* s);
 	Point get_point(int index);
 
 	Shape2D& operator=(const Shape2D& other);

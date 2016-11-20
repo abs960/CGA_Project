@@ -9,7 +9,7 @@ protected:
 	int drawing_coef;
 
 	int section_count;
-	std::vector<SectionWindow> sections;
+	std::vector<SectionWindow*> sections;
 	Line* basic_brush; 
 
 	float scalar_mult(Vector p1, Vector p2);
@@ -22,7 +22,7 @@ public:
 	CyrusBeckLine(const CyrusBeckLine& copy);
 	~CyrusBeckLine();
 
-	void push_section_window(SectionWindow section);
+	void push_section_window(SectionWindow* section);
 	SectionWindow pop_section_window();
 	int get_section_window_count();
 	void set_basic_brush(Line* brush);

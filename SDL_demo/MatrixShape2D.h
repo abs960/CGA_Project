@@ -5,11 +5,14 @@
 
 class MatrixShape2D : public Shape2D {
 protected:
-	Matrix matrix;
+	Matrix* matrix;
 
 	float angle;
 	float scale;
 	Point center;
+
+	Point apply_matrix_to_point(Point old);
+	void init_points();
 public:
 	MatrixShape2D();
 	MatrixShape2D(int side_count);
@@ -17,15 +20,18 @@ public:
 	MatrixShape2D(const MatrixShape2D& copy);
 	~MatrixShape2D();
 
-	double get_element(int row, int col);
-	void set_matrix(Matrix matrix);
+	double get_matrix_element(int row, int col);
+	void set_matrix(Matrix* matrix);
 	void set_angle(float angle);
 	float get_angle();
 	void set_scale(float scale);
 	float get_scale();
 	void set_center(Point center);
 	Point get_center();
-	void apply_matrix();
+
+	void do_move(double dx, double dy);
+	void do_rotate(float d_angle);
+	void do_scale(float d_scale);
 
 	MatrixShape2D& operator=(const MatrixShape2D& other);
 };

@@ -5,7 +5,7 @@ NestedShape2D::NestedShape2D() : NestedShape2D(DEFAULT_SIDE_COUNT, DEFAULT_RADIU
 NestedShape2D::NestedShape2D(int side_count) : NestedShape2D(side_count, DEFAULT_RADIUS) {}
 
 NestedShape2D::NestedShape2D(int side_count, int radius) {
-	matrix = Matrix(3);
+	matrix = new Matrix(3);
 	colour = Colour();
 	brush = nullptr;
 
@@ -20,7 +20,7 @@ NestedShape2D::NestedShape2D(int side_count, int radius) {
 }
 
 NestedShape2D::NestedShape2D(const NestedShape2D & copy) {
-	matrix = copy.matrix;
+	*matrix = *(copy.matrix);
 	colour = copy.colour;
 	*brush = *(copy.brush);
 
@@ -52,10 +52,13 @@ void NestedShape2D::draw(SDL_Surface * s) {
 	brush->set_colour(colour);
 	float tmp_tan = tan(M_PI / 4 * MULTIPLICITY / nested_count);
 	float side_separator_coef = tmp_tan / (tmp_tan + 1);
+	for (int i = 0; i < side_count; i++) {
+		brush->draw(s, work_points[i], work_points[NEXT(i, side_count)]);
+	}
 	for (int i = 0; i < nested_count; i++) {
+		recount_coordinates(work_points, side_separator_coef);
 		for (int j = 0; j < side_count; j++)
 			brush->draw(s, work_points[j], work_points[NEXT(j, side_count)]);
-		recount_coordinates(work_points, side_separator_coef);
 	}
 
 	delete[] work_points;
@@ -65,7 +68,7 @@ NestedShape2D & NestedShape2D::operator=(const NestedShape2D & other) {
 	if (&other == this)
 		return (*this);
 
-	matrix = other.matrix;
+	*matrix = *(other.matrix);
 	colour = other.colour;
 	*brush = *(other.brush);
 

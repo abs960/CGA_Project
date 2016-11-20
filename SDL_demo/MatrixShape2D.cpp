@@ -5,7 +5,7 @@ MatrixShape2D::MatrixShape2D() : MatrixShape2D(DEFAULT_SIDE_COUNT, DEFAULT_RADIU
 MatrixShape2D::MatrixShape2D(int side_count) : MatrixShape2D(side_count, DEFAULT_RADIUS) {}
 
 MatrixShape2D::MatrixShape2D(int side_count, int radius) {
-	matrix = Matrix(3);
+	matrix = new Matrix(3);
 	colour = Colour();
 	brush = nullptr;
 
@@ -19,7 +19,7 @@ MatrixShape2D::MatrixShape2D(int side_count, int radius) {
 }
 
 MatrixShape2D::MatrixShape2D(const MatrixShape2D & copy) {
-	matrix = copy.matrix;
+	*matrix = *(copy.matrix);
 	colour = copy.colour;
 	*brush = *(copy.brush);
 
@@ -32,15 +32,17 @@ MatrixShape2D::MatrixShape2D(const MatrixShape2D & copy) {
 		points[i] = copy.points[i];
 }
 
-MatrixShape2D::~MatrixShape2D() {}
-
-double MatrixShape2D::get_element(int row, int col) {
-	return matrix.get_element(row, col);
+MatrixShape2D::~MatrixShape2D() {
+	delete matrix;
 }
 
-void MatrixShape2D::set_matrix(Matrix matrix) {
+double MatrixShape2D::get_matrix_element(int row, int col) {
+	return matrix->get_element(row, col);
+}
+
+void MatrixShape2D::set_matrix(Matrix* matrix) {
 	this->matrix = matrix;
-	apply_matrix();
+	init_points();
 }
 
 void MatrixShape2D::set_angle(float angle) {
@@ -67,17 +69,56 @@ Point MatrixShape2D::get_center() {
 	return center;
 }
 
-void MatrixShape2D::apply_matrix() {
+void MatrixShape2D::do_move(double dx, double dy) {
+	center = center + Point(dx, dy);
+
+	Matrix d_matrix = Matrix(3);
+	d_matrix.set_element(0, 0, 1);
+	d_matrix.set_element(0, 2, dx);
+	d_matrix.set_element(1, 1, 1);
+	d_matrix.set_element(1, 2, dy);
+	d_matrix.set_element(2, 2, 1);
+
+	*matrix *= d_matrix;
+	init_points();
+}
+
+void MatrixShape2D::do_rotate(float d_angle) {
+	angle += d_angle;
+	
+	Matrix d_matrix = Matrix(3);
+	d_matrix.set_element(0, 0, cos(RAD(d_angle)));
+	d_matrix.set_element(0, 1, -sin(RAD(d_angle)));
+	d_matrix.set_element(1, 0, sin(RAD(d_angle)));
+	d_matrix.set_element(1, 1, cos(RAD(d_angle)));
+	d_matrix.set_element(2, 2, 1);
+
+	*matrix *= d_matrix;
+	init_points();
+}
+
+void MatrixShape2D::do_scale(float d_scale) {
+	scale += d_scale;
+
+	Matrix d_matrix = Matrix(3);
+	d_matrix.set_element(0, 0, 1 + d_scale);
+	d_matrix.set_element(1, 1, 1 + d_scale);
+	d_matrix.set_element(2, 2, 1);
+
+	*matrix *= d_matrix;
+	init_points();
+}
+
+void MatrixShape2D::init_points() {
+	points = new Point[side_count];
+
+	int start_angle = abs(90 - (360 / side_count) / 2);
 	for (int i = 0; i < side_count; i++) {
-		std::vector<double> counted_coordinates;
-		counted_coordinates.push_back(points[i].x);
-		counted_coordinates.push_back(points[i].y);
-		counted_coordinates.push_back(1);
-
-		std::vector<double> result = matrix * counted_coordinates;
-
-		points[i].x = result[0];
-		points[i].y = result[1];
+		Point tmp = Point(
+			radius * cos(2 * M_PI * i / side_count + RAD(start_angle)),
+			radius * sin(2 * M_PI * i / side_count + RAD(start_angle))
+		);
+		points[i] = apply_matrix_to_point(tmp);
 	}
 }
 
@@ -85,7 +126,7 @@ MatrixShape2D & MatrixShape2D::operator=(const MatrixShape2D & other) {
 	if (&other == this)
 		return (*this);
 
-	matrix = other.matrix;
+	*matrix = *(other.matrix);
 	colour = other.colour;
 	*brush = *(other.brush);
 
@@ -96,4 +137,20 @@ MatrixShape2D & MatrixShape2D::operator=(const MatrixShape2D & other) {
 	points = new Point[side_count];
 	for (int i = 0; i < side_count; i++)
 		points[i] = other.points[i];
+}
+
+Point MatrixShape2D::apply_matrix_to_point(Point old) {
+	std::vector<double> old_coords;
+	old_coords.push_back(old.x);
+	old_coords.push_back(old.y);
+	old_coords.push_back(1);
+
+	std::vector<double> new_coords = (*matrix) * old_coords;
+
+	Point result = Point(
+		new_coords[0],
+		new_coords[1]
+	);
+
+	return result;
 }

@@ -17,13 +17,13 @@ CyrusBeckLine::~CyrusBeckLine() {
 	delete basic_brush;
 }
 
-void CyrusBeckLine::push_section_window(SectionWindow section) {
+void CyrusBeckLine::push_section_window(SectionWindow* section) {
 	section_count++;
 	sections.push_back(section);
 }
 
 SectionWindow CyrusBeckLine::pop_section_window() {
-	SectionWindow result = sections.at(section_count - 1);
+	SectionWindow result = *sections.at(section_count - 1);
 	sections.pop_back();
 	return result;
 }
@@ -66,14 +66,14 @@ void CyrusBeckLine::draw_with_section_window(SDL_Surface * s, Point start, Point
 			basic_brush->draw(s, start, finish);
 		return;
 	}
-	bool current_transparency = sections.at(section_number).is_transparent();
+	bool current_transparency = sections.at(section_number)->is_transparent();
 
 	float t_low = 0, t_high = 1, t;
 	Point directrix = finish - start;
-	int current_side_count = sections.at(section_number).get_side_count();
+	int current_side_count = sections.at(section_number)->get_side_count();
 	for (int i = 0; i < current_side_count; i++) {
-		Point sw_side_start = sections.at(section_number).get_point(i);
-		Point sw_side_finish = sections.at(section_number).get_point(NEXT(i, current_side_count));
+		Point sw_side_start = sections.at(section_number)->get_point(i);
+		Point sw_side_finish = sections.at(section_number)->get_point(NEXT(i, current_side_count));
 		Vector normal = Vector(sw_side_start.y - sw_side_finish.y,
 							   sw_side_finish.x - sw_side_start.x);
 		Vector w = start - sw_side_start;
@@ -119,7 +119,7 @@ void CyrusBeckLine::draw_with_section_window(SDL_Surface * s, Point start, Point
 void CyrusBeckLine::count_drawing_coef() {
 	drawing_coef = 0;
 	if (section_count % 2 == 0) {
-		drawing_coef = sections.at(section_count - 1).is_transparent() ? 2 : 0;
+		drawing_coef = sections.at(section_count - 1)->is_transparent() ? 2 : 0;
 	} else {
 		drawing_coef = 1;
 	}
@@ -127,13 +127,13 @@ void CyrusBeckLine::count_drawing_coef() {
 
 void CyrusBeckLine::optimize_sections() {
 	std::vector<int> sections_counts_to_keep;
-	std::vector<SectionWindow> optimized_sections;
+	std::vector<SectionWindow*> optimized_sections;
 
-	bool prev_transp = sections.at(0).is_transparent();
+	bool prev_transp = sections.at(0)->is_transparent();
 	int dif_transp = 0;
 	for (int i = 1; i < section_count; i++) {
-		if (sections.at(i).is_transparent() != prev_transp) {
-			prev_transp = sections.at(i).is_transparent();
+		if (sections.at(i)->is_transparent() != prev_transp) {
+			prev_transp = sections.at(i)->is_transparent();
 			sections_counts_to_keep.push_back(dif_transp);
 		} 
 		dif_transp = i;

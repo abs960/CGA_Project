@@ -5,7 +5,7 @@ SectionWindow::SectionWindow() : SectionWindow(DEFAULT_SIDE_COUNT, DEFAULT_RADIU
 SectionWindow::SectionWindow(int side_count) : SectionWindow(side_count, DEFAULT_RADIUS) {}
 
 SectionWindow::SectionWindow(int side_count, int radius) {
-	matrix = Matrix(3);
+	matrix = new Matrix(3);
 	colour = Colour();
 	brush = nullptr;
 
@@ -20,10 +20,9 @@ SectionWindow::SectionWindow(int side_count, int radius) {
 }
 
 SectionWindow::SectionWindow(const SectionWindow & copy) {
-	matrix = copy.matrix;
+	*matrix = *(copy.matrix);
 	colour = copy.colour;
-	if (brush != nullptr)
-		*brush = *(copy.brush);
+	*brush = *(copy.brush);
 
 	transparent = copy.transparent;
 	side_count = copy.side_count;
@@ -49,7 +48,7 @@ SectionWindow & SectionWindow::operator=(const SectionWindow & other) {
 	if (&other == this)
 		return (*this);
 
-	matrix = other.matrix;
+	*matrix = *(other.matrix);
 	colour = other.colour;
 	*brush = *(other.brush);
 
