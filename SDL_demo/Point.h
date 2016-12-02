@@ -1,8 +1,12 @@
 #pragma once
 
+#include "stdafx.h"
+
 #define DEFAULT_COORDINATE 0
 
 typedef class Point {
+private:
+	bool equals(float f1, float f2);
 public:
 	float x;
 	float y;
@@ -22,9 +26,12 @@ public:
 	Point& operator-=(Point p);
 	Point operator*(double m);
 	Point& operator*=(double m);
+	double operator*(Point p);
 	Point operator/(double d);
 	Point& operator/=(double d);
 	
 	bool operator==(Point p);
 	bool operator!=(Point p);
+
+	Point vector_mult(Point p);
 } Point, Vector;

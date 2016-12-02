@@ -57,6 +57,15 @@
     <ClInclude Include="CyrusBeckLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Facet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -99,6 +108,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CyrusBeckLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Facet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

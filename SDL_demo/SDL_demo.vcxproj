@@ -86,13 +86,16 @@
     <ClInclude Include="Colour.h" />
     <ClInclude Include="CyrusBeckLine.h" />
     <ClInclude Include="draw.h" />
+    <ClInclude Include="Facet.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MatrixShape2D.h" />
     <ClInclude Include="NestedShape2D.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Scene3D.h" />
     <ClInclude Include="SectionWindow.h" />
     <ClInclude Include="Shape2D.h" />
+    <ClInclude Include="Shape3D.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WuLine.h" />
@@ -102,14 +105,17 @@
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="CyrusBeckLine.cpp" />
     <ClCompile Include="draw.cpp" />
+    <ClCompile Include="Facet.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixShape2D.cpp" />
     <ClCompile Include="NestedShape2D.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Scene3D.cpp" />
     <ClCompile Include="SDL_demo.cpp" />
     <ClCompile Include="SectionWindow.cpp" />
     <ClCompile Include="Shape2D.cpp" />
+    <ClCompile Include="Shape3D.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="WuLine.cpp" />
   </ItemGroup>

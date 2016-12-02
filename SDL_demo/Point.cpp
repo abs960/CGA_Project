@@ -53,6 +53,10 @@ Point & Point::operator*=(double m) {
 	return (*this) * m;
 }
 
+double Point::operator*(Point p) {
+	return x * p.x + y * p.y + z * p.z;
+}
+
 Point Point::operator/(double d) {
 	return Point(x / d, y / d, z / d);
 }
@@ -62,9 +66,17 @@ Point & Point::operator/=(double d) {
 }
 
 bool Point::operator==(Point p) {
-	return x == p.x && y == p.y && z == p.z;
+	return equals(x, p.x) && equals(y, p.y) && equals(z, p.z);
 }
 
 bool Point::operator!=(Point p) {
 	return !((*this) == p);
+}
+
+Point Point::vector_mult(Point p) {
+	return Point(y * p.z - z * p.y, z * p.x - x * p.z, x * p.y - y * p.x);
+}
+
+bool Point::equals(float f1, float f2) {
+	return abs(f1 - f2) < ALMOST_ZERO;
 }

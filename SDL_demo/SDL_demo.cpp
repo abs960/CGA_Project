@@ -3,20 +3,21 @@
 #include "Matrix.h"
 #include "Point.h"
 #include "Colour.h"
-#include "Line.h"
 #include "BrezenheimLine.h"
 #include "WuLine.h"
-#include "Shape2D.h"
-#include "MatrixShape2D.h"
 #include "NestedShape2D.h"
-#include "SectionWindow.h"
 #include "CyrusBeckLine.h"
+#include "Scene3D.h"
 
 bool init();
-void close();
 void init_shapes();
 void init_matrices();
 void destroy_shapes();
+void close();
+
+void add_3d_objects(int layer_count);
+
+const bool USES_3D = true;
 
 const int
 	// Transformation matrices counts
@@ -48,7 +49,7 @@ const float
 	// Steps values for matrices
 	STEP_S = 0.01,
 	STEP_T = 5,
-	STEP_R = 1;
+	STEP_R = 2;
 
 SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
@@ -56,10 +57,11 @@ SDL_Texture* gTexture = NULL;
 SDL_Surface* loadedSurface = NULL;
 
 MatrixShape2D** shapes;
-
 int	shapes_count,
 	sections_count,
 	total_count;
+
+Scene3D* scene3d;
 
 bool init()
 {
@@ -110,35 +112,41 @@ void close()
 }
 
 void init_shapes() {
-	shapes_count = MIN_SHAPES_COUNT;
-	sections_count = MIN_SECTION_COUNT;
-	total_count = shapes_count + sections_count;
-	shapes = new MatrixShape2D*[total_count];
-	
-	for (int i = 0; i < sections_count; i++) {
-		SectionWindow* sw = new SectionWindow(START_SIDE_COUNT, RADIUS * 2);
-		sw->set_transparent(true);
-		sw->set_colour(Colour(Colour::COLOUR_BLUE));
-		sw->set_brush(new WuLine());
-		shapes[i] = sw;
-	} 
+	if (USES_3D) {
+		scene3d = new Scene3D();
+		scene3d->set_base_line(new WuLine());
+		scene3d->set_colour(Colour(Colour::COLOUR_GREEN));
+	} else {
+		shapes_count = MIN_SHAPES_COUNT;
+		sections_count = MIN_SECTION_COUNT;
+		total_count = shapes_count + sections_count;
+		shapes = new MatrixShape2D*[total_count];
 
-	for (int i = sections_count; i < total_count; i++) {
-		CyrusBeckLine* l = new CyrusBeckLine();
-		l->set_basic_brush(new WuLine());
-		for (int j = 0; j < sections_count; j++) {
-			SectionWindow* sw = dynamic_cast<SectionWindow*>(shapes[j]);
-			l->push_section_window(sw);
+		for (int i = 0; i < sections_count; i++) {
+			SectionWindow* sw = new SectionWindow(START_SIDE_COUNT, SIDE_LENGTH * 2);
+			sw->set_transparent(true);
+			sw->set_colour(Colour(Colour::COLOUR_BLUE));
+			sw->set_brush(new WuLine());
+			shapes[i] = sw;
 		}
 
-		NestedShape2D* s = new NestedShape2D(START_SIDE_COUNT, RADIUS);
-		s->set_nested_count(START_NESTED_COUNT);
-		s->set_colour(Colour(Colour::COLOUR_GREEN));
-		s->set_brush(l);
-		shapes[i] = s;
-	}
+		for (int i = sections_count; i < total_count; i++) {
+			CyrusBeckLine* l = new CyrusBeckLine();
+			l->set_basic_brush(new WuLine());
+			for (int j = 0; j < sections_count; j++) {
+				SectionWindow* sw = dynamic_cast<SectionWindow*>(shapes[j]);
+				l->push_section_window(sw);
+			}
 
-	init_matrices();
+			NestedShape2D* s = new NestedShape2D(START_SIDE_COUNT, SIDE_LENGTH);
+			s->set_nested_count(START_NESTED_COUNT);
+			s->set_colour(Colour(Colour::COLOUR_GREEN));
+			s->set_brush(l);
+			shapes[i] = s;
+		}
+
+		init_matrices();
+	}
 }
 
 void init_matrices() {
@@ -173,14 +181,39 @@ void init_matrices() {
 }
 
 void destroy_shapes() {
-	for (int i = 0; i < total_count; i++)
-		delete shapes[i];
-	delete[] shapes;
+	if (USES_3D) {
+		delete scene3d;
+	} else {
+		for (int i = 0; i < total_count; i++)
+			delete shapes[i];
+		delete[] shapes;
+	}
+}
+
+void add_3d_objects(int layer_count) {
+	scene3d->clear_scene();
+	/*for (int i = 0; i < layer_count; i++) {
+		float x = 0;
+		float y = (layer_count - i) * SIDE_LENGTH;
+		float z = (layer_count - i + 1) * SIDE_LENGTH;
+
+		for (int j = 0; j < i; j++) {
+			Point pivot = Point();
+
+
+			Shape3D* shape = new Shape3D(pivot, SIDE_LENGTH);
+			scene3d->add_object(shape);
+		}
+	}*/
+
+	scene3d->add_object(new Shape3D(Point(0, -2 * SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
+	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, 2 * SIDE_LENGTH), SIDE_LENGTH));
+	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
+	scene3d->add_object(new Shape3D(Point(SIDE_LENGTH, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//std::vector<int>
 	if (!init()) {
 		printf("Failed to initialize!\n");
 	} else {
@@ -199,127 +232,196 @@ int _tmain(int argc, _TCHAR* argv[])
 			int chosen_shape_count = 0;
 			while (!quit) {
 				while (SDL_PollEvent(&e) != 0) {
-					if ( SDL_QUIT == e.type ) {
+					if (SDL_QUIT == e.type) {
 						quit = true;
 					}
-					if ( SDL_KEYDOWN == e.type ) {
-						int sides; 
-						float step_x;
-						float step_y;
-						switch (e.key.keysym.scancode) {
-						// Changing figure count
-						case SDL_SCANCODE_MINUS:
-							if (chosen_shape_count > 0) 
-								chosen_shape_count--;
-							printf("Current figure count = %d\n", chosen_shape_count);
-							break;
-						case SDL_SCANCODE_EQUALS:
-							if (chosen_shape_count < total_count - 1)
-								chosen_shape_count++;
-							printf("Current figure count = %d\n", chosen_shape_count);
-							break;
-						// Do drawing inside section window
-						case SDL_SCANCODE_V:
-							if (chosen_shape_count < sections_count) {
-								if (SectionWindow* sw = dynamic_cast<SectionWindow*>(shapes[chosen_shape_count])) {
-									bool trans = sw->is_transparent();
-									sw->set_transparent(!trans);
-									if (trans)
-										printf("Currently drawing outside section window\n");
-									else
-										printf("Currently drawing inside section window\n");
-								}
+					if (SDL_KEYDOWN == e.type) {
+						if (USES_3D) {
+							switch (e.key.keysym.scancode) {
+							case SDL_SCANCODE_J:
+								scene3d->move(-STEP_T, 0, 0);
+								printf("left\n");
+								break;
+							case SDL_SCANCODE_L:
+								scene3d->move(STEP_T, 0, 0);
+								printf("right\n");
+								break;
+							case SDL_SCANCODE_I:
+								scene3d->move(0, -STEP_T, 0);
+								printf("up\n");
+								break;
+							case SDL_SCANCODE_K:
+								scene3d->move(0, STEP_T, 0);
+								printf("down\n");
+								break;
+							case SDL_SCANCODE_U:
+								scene3d->move(0, 0, -STEP_T);
+								printf("out\n");
+								break;
+							case SDL_SCANCODE_O:
+								scene3d->move(0, 0, STEP_T);
+								printf("in\n");
+								break;
+							case SDL_SCANCODE_S:
+								scene3d->rotate_x(STEP_R);
+								printf("+x\n");
+								break;
+							case SDL_SCANCODE_W:
+								scene3d->rotate_x(-STEP_R);
+								printf("-x\n");
+								break;
+							case SDL_SCANCODE_D:
+								scene3d->rotate_y(STEP_R);
+								printf("+y\n");
+								break;
+							case SDL_SCANCODE_A:
+								scene3d->rotate_y(-STEP_R);
+								printf("-y\n");
+								break;
+							case SDL_SCANCODE_E:
+								scene3d->rotate_z(STEP_R);
+								printf("+z\n");
+								break;
+							case SDL_SCANCODE_Q:
+								scene3d->rotate_z(-STEP_R);
+								printf("-z\n");
+								break;
+							case SDL_SCANCODE_PERIOD:
+								scene3d->scale(1-STEP_S);
+								printf("-s\n");
+								break;
+							case SDL_SCANCODE_SLASH:
+								scene3d->scale(1+STEP_S);
+								printf("+s\n");
+								break;
+							/*case SDL_SCANCODE_Z:
+								shape3d->rotateAroundEdge(-2);
+								printf("");
+								break;
+							case SDL_SCANCODE_C:
+								shape3d->rotateAroundEdge(2);
+								printf("");
+								break;*/
 							}
-							break;
-						// Sides count changing
-						case SDL_SCANCODE_Q:
-							sides = shapes[chosen_shape_count]->get_side_count();
-							if (sides > MIN_SIDE_COUNT) {
-								sides--;
-								shapes[chosen_shape_count]->set_side_count(sides);
-							}
-							printf("Side count = %d\n", sides);
-							break;
-						case SDL_SCANCODE_W:
-							sides = shapes[chosen_shape_count]->get_side_count();
-							if (sides < MAX_SIDE_COUNT) {
-								sides++;
-								shapes[chosen_shape_count]->set_side_count(sides);
-							}
-							printf("Side count = %d\n", sides);
-							break;
-						// Nested count changing
-						case SDL_SCANCODE_A:
-							if (chosen_shape_count >= sections_count) {
-								if (NestedShape2D* ns = dynamic_cast<NestedShape2D*>(shapes[chosen_shape_count])) {
-									int nested = ns->get_nested_count();
-									if (nested > MIN_NESTED_COUNT) {
-										nested--;
-										ns->set_nested_count(nested);
+						} else {
+							int sides;
+							float step_x;
+							float step_y;
+							switch (e.key.keysym.scancode) {
+								// Changing figure count
+							case SDL_SCANCODE_MINUS:
+								if (chosen_shape_count > 0)
+									chosen_shape_count--;
+								printf("Current figure count = %d\n", chosen_shape_count);
+								break;
+							case SDL_SCANCODE_EQUALS:
+								if (chosen_shape_count < total_count - 1)
+									chosen_shape_count++;
+								printf("Current figure count = %d\n", chosen_shape_count);
+								break;
+								// Do drawing inside section window
+							case SDL_SCANCODE_V:
+								if (chosen_shape_count < sections_count) {
+									if (SectionWindow* sw = dynamic_cast<SectionWindow*>(shapes[chosen_shape_count])) {
+										bool trans = sw->is_transparent();
+										sw->set_transparent(!trans);
+										if (trans)
+											printf("Currently drawing outside section window\n");
+										else
+											printf("Currently drawing inside section window\n");
 									}
-									printf("Nested figure count = %d\n", nested);
 								}
-							}
-							break;
-						case SDL_SCANCODE_S:
-							if (chosen_shape_count >= sections_count) {
-								if (NestedShape2D* ns = dynamic_cast<NestedShape2D*>(shapes[chosen_shape_count])) {
-									int nested = ns->get_nested_count();
-									if (nested < MAX_NESTED_COUNT) {
-										nested++;
-										ns->set_nested_count(nested);
+								break;
+								// Sides count changing
+							case SDL_SCANCODE_Q:
+								sides = shapes[chosen_shape_count]->get_side_count();
+								if (sides > MIN_SIDE_COUNT) {
+									sides--;
+									shapes[chosen_shape_count]->set_side_count(sides);
+								}
+								printf("Side count = %d\n", sides);
+								break;
+							case SDL_SCANCODE_W:
+								sides = shapes[chosen_shape_count]->get_side_count();
+								if (sides < MAX_SIDE_COUNT) {
+									sides++;
+									shapes[chosen_shape_count]->set_side_count(sides);
+								}
+								printf("Side count = %d\n", sides);
+								break;
+								// Nested count changing
+							case SDL_SCANCODE_A:
+								if (chosen_shape_count >= sections_count) {
+									if (NestedShape2D* ns = dynamic_cast<NestedShape2D*>(shapes[chosen_shape_count])) {
+										int nested = ns->get_nested_count();
+										if (nested > MIN_NESTED_COUNT) {
+											nested--;
+											ns->set_nested_count(nested);
+										}
+										printf("Nested figure count = %d\n", nested);
 									}
-									printf("Nested figure count = %d\n", nested);
 								}
+								break;
+							case SDL_SCANCODE_S:
+								if (chosen_shape_count >= sections_count) {
+									if (NestedShape2D* ns = dynamic_cast<NestedShape2D*>(shapes[chosen_shape_count])) {
+										int nested = ns->get_nested_count();
+										if (nested < MAX_NESTED_COUNT) {
+											nested++;
+											ns->set_nested_count(nested);
+										}
+										printf("Nested figure count = %d\n", nested);
+									}
+								}
+								break;
+								// Scaling
+							case SDL_SCANCODE_SLASH:
+								shapes[chosen_shape_count]->do_scale(STEP_S);
+								printf("Current scale = %f\n", shapes[chosen_shape_count]->get_scale());
+								break;
+							case SDL_SCANCODE_PERIOD:
+								shapes[chosen_shape_count]->do_scale(-STEP_S);
+								printf("Current scale = %f\n", shapes[chosen_shape_count]->get_scale());
+								break;
+								// Moving/Translating
+							case SDL_SCANCODE_RIGHT:
+								step_x = STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
+								step_y = -STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
+								shapes[chosen_shape_count]->do_move(step_x, step_y);
+								printf("Current center coordinates:\n\tx = %f\n\ty = %f\n",
+									   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
+								break;
+							case SDL_SCANCODE_LEFT:
+								step_x = -STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
+								step_y = STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
+								shapes[chosen_shape_count]->do_move(step_x, step_y);
+								printf("Current center coordinates:\n\tx = %f\n\ty = %f\n",
+									   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
+								break;
+							case SDL_SCANCODE_DOWN:
+								step_x = STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
+								step_y = STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
+								shapes[chosen_shape_count]->do_move(step_x, step_y);
+								printf("Current center coordinates:\n\tx = %f\n\ty = %f\n",
+									   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
+								break;
+							case SDL_SCANCODE_UP:
+								step_x = -STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
+								step_y = -STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
+								shapes[chosen_shape_count]->do_move(step_x, step_y);
+								printf("Current center coordinates:\n\tx = %f\n\ty = %f\n",
+									   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
+								break;
+								// Rotating
+							case SDL_SCANCODE_X:
+								shapes[chosen_shape_count]->do_rotate(STEP_R);
+								printf("Current angle = %d\n", shapes[chosen_shape_count]->get_angle());
+								break;
+							case SDL_SCANCODE_Z:
+								shapes[chosen_shape_count]->do_rotate(-STEP_R);
+								printf("Current angle = %d\n", shapes[chosen_shape_count]->get_angle());
+								break;
 							}
-							break;
-						// Scaling
-						case SDL_SCANCODE_SLASH:
-							shapes[chosen_shape_count]->do_scale(STEP_S);
-							printf("Current scale = %f\n", shapes[chosen_shape_count]->get_scale());
-							break;
-						case SDL_SCANCODE_PERIOD:
-							shapes[chosen_shape_count]->do_scale(-STEP_S);
-							printf("Current scale = %f\n", shapes[chosen_shape_count]->get_scale());
-							break;
-						// Moving/Translating
-						case SDL_SCANCODE_RIGHT:
-							step_x = STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
-							step_y = -STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
-							shapes[chosen_shape_count]->do_move(step_x, step_y);
-							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n", 
-								   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
-							break;
-						case SDL_SCANCODE_LEFT:
-							step_x = -STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
-							step_y = STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
-							shapes[chosen_shape_count]->do_move(step_x, step_y);
-							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n", 
-								   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
-							break;
-						case SDL_SCANCODE_DOWN:
-							step_x = STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
-							step_y = STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
-							shapes[chosen_shape_count]->do_move(step_x, step_y);
-							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n",
-								   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
-							break;
-						case SDL_SCANCODE_UP:
-							step_x = -STEP_T * sin(RAD(shapes[chosen_shape_count]->get_angle()));
-							step_y = -STEP_T * cos(RAD(shapes[chosen_shape_count]->get_angle()));
-							shapes[chosen_shape_count]->do_move(step_x, step_y);
-							printf("Current center coordinates:\n\tx = %f\n\ty = %f\n",
-								   shapes[chosen_shape_count]->get_center().x, shapes[chosen_shape_count]->get_center().y);
-							break;
-						// Rotating
-						case SDL_SCANCODE_X:
-							shapes[chosen_shape_count]->do_rotate(STEP_R);
-							printf("Current angle = %d\n", shapes[chosen_shape_count]->get_angle());
-							break;
-						case SDL_SCANCODE_Z:
-							shapes[chosen_shape_count]->do_rotate(-STEP_R);
-							printf("Current angle = %d\n", shapes[chosen_shape_count]->get_angle());
-							break;
 						}
 					}
 				}
@@ -328,8 +430,13 @@ int _tmain(int argc, _TCHAR* argv[])
 				// Clearing the surface
 				SDL_FillRect(loadedSurface, NULL, Colour::COLOUR_BLACK);
 
-				for (int i = 0; i < total_count; i++)
-					shapes[i]->draw(loadedSurface);
+				if (USES_3D) {
+					add_3d_objects(2);
+					scene3d->draw(loadedSurface);
+				} else {
+					for (int i = 0; i < total_count; i++)
+						shapes[i]->draw(loadedSurface);
+				}
 
 				SDL_UpdateTexture(gTexture, NULL, loadedSurface->pixels, loadedSurface->pitch);
 				SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
