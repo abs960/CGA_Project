@@ -212,10 +212,10 @@ void add_3d_objects(int layer_count) {
 		}
 	}*/
 
-	scene3d->add_object(new Shape3D(Point(0, -2 * SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));/*
+	scene3d->add_object(new Shape3D(Point(0, -2 * SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
 	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, 2 * SIDE_LENGTH), SIDE_LENGTH));
 	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
-	scene3d->add_object(new Shape3D(Point(SIDE_LENGTH, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));*/
+	scene3d->add_object(new Shape3D(Point(SIDE_LENGTH, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
 }
 
 int _tmain(int argc, _TCHAR* argv[])

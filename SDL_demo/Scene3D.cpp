@@ -287,7 +287,7 @@ std::vector<Facet> Scene3D::draw_facets(SDL_Surface* s, std::vector<Facet> visib
 			}
 		}
 		if (facet_to_draw.get_point_count() != 0) {
-			facet_to_draw.fill(s, colour, observer);
+			current_facet.fill(s, colour, observer);
 			facets_to_draw.push_back(facet_to_draw);
 		}
 	}

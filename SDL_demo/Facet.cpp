@@ -53,8 +53,12 @@ bool Facet::is_visible(Vector observer) {
 }
 
 Vector Facet::get_normal() {
-	Vector edge0 = points.at(0) - points.at(1);
-	Vector edge1 = points.at(1) - points.at(2);
+	int first = 0;
+	int second = NEXT(first, points.size());
+	int third = NEXT(second, points.size());
+
+	Vector edge0 = points.at(first) - points.at(second);
+	Vector edge1 = points.at(second) - points.at(third);
 	Vector normal = edge0.vector_mult(edge1);
 	return normal;
 }
@@ -128,11 +132,6 @@ std::vector<int> Facet::get_x_borders(int y) {
 		if (points.at(i).y == points.at(NEXT(i, size)).y) {
 			continue;
 		}
-		// check if local extremum
-		/*if (points.at(i).y > points.at(NEXT(i, size)).y && points.at(i).y > points.at(PREV(i, size)).y ||
-			points.at(i).y < points.at(NEXT(i, size)).y && points.at(i).y < points.at(PREV(i, size)).y) {
-			continue;
-		}*/
 
 		Point y_min, y_max;
 		if (points.at(i).y > points.at(NEXT(i, size)).y) {
@@ -168,9 +167,9 @@ void Facet::fill(SDL_Surface * s, Colour colour, Vector observer) {
 	Vector normal = get_normal();
 	double scal_mult = observer * normal;
 	double mod_mult = observer.modulus() * normal.modulus();
-	double angle = acos(scal_mult / mod_mult) * 180 / M_PI;
+
+	double intensity = scal_mult / mod_mult;
 	Colour c = Colour(colour.get_value() * 0.75);
-	float intensity = 1 - (angle / 180);
 	c.change_intensity(intensity);
 
 	int y_top = top().y;
