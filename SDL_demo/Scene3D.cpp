@@ -13,6 +13,8 @@ Scene3D::Scene3D() {
 	matrix->set_element(0, 3, store_shift.x);
 	matrix->set_element(1, 3, store_shift.y);
 	matrix->set_element(2, 3, store_shift.z);
+	rotate_x(-30);
+	rotate_y(-30);
 }
 
 Scene3D::Scene3D(const Scene3D & copy) {
@@ -286,8 +288,8 @@ std::vector<Facet> Scene3D::draw_facets(SDL_Surface* s, std::vector<Facet> visib
 				}
 			}
 		}
+		current_facet.fill(s, colour, observer);
 		if (facet_to_draw.get_point_count() != 0) {
-			current_facet.fill(s, colour, observer);
 			facets_to_draw.push_back(facet_to_draw);
 		}
 	}

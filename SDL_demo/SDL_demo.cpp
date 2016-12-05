@@ -18,6 +18,7 @@ void close();
 void add_3d_objects(int layer_count);
 
 Colour BACKGROUND = Colour(Colour::COLOUR_BLACK);
+Vector ROTATION = Vector(300, 150, 225);
 
 const bool USES_3D = true;
 
@@ -122,6 +123,7 @@ void init_shapes() {
 		scene3d = new Scene3D();
 		scene3d->set_base_line(new WuLine());
 		scene3d->set_colour(Colour(Colour::COLOUR_GREEN));
+		add_3d_objects(START_LAYER_COUNT);
 	} else {
 		shapes_count = MIN_SHAPES_COUNT;
 		sections_count = MIN_SECTION_COUNT;
@@ -198,24 +200,17 @@ void destroy_shapes() {
 
 void add_3d_objects(int layer_count) {
 	scene3d->clear_scene();
-	/*for (int i = 0; i < layer_count; i++) {
-		float x = 0;
-		float y = (layer_count - i) * SIDE_LENGTH;
-		float z = (layer_count - i + 1) * SIDE_LENGTH;
 
-		for (int j = 0; j < i; j++) {
-			Point pivot = Point();
-
-
-			Shape3D* shape = new Shape3D(pivot, SIDE_LENGTH);
-			scene3d->add_object(shape);
+	for (int i = 0; i < layer_count; i++) {
+		int y = -(layer_count - i) * SIDE_LENGTH;
+		for (int j = 0; j < i + 1; j++) {
+			int x = j * SIDE_LENGTH;
+			for (int k = i - j + 1; k > 0; k--) {
+				int z = (k) * SIDE_LENGTH;
+				scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+			}
 		}
-	}*/
-
-	scene3d->add_object(new Shape3D(Point(0, -2 * SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
-	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, 2 * SIDE_LENGTH), SIDE_LENGTH));
-	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
-	scene3d->add_object(new Shape3D(Point(SIDE_LENGTH, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
+	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -314,11 +309,11 @@ int _tmain(int argc, _TCHAR* argv[])
 								printf("-z\n");
 								break;
 							case SDL_SCANCODE_Z:
-								scene3d->rotate_vector(Vector(402, 150, 224), STEP_R);
+								scene3d->rotate_vector(ROTATION, STEP_R);
 								printf("+v\n");
 								break;
 							case SDL_SCANCODE_C:
-								scene3d->rotate_vector(Vector(402, 150, 224), -STEP_R);
+								scene3d->rotate_vector(ROTATION, -STEP_R);
 								printf("-v\n");
 								break;
 							case SDL_SCANCODE_PERIOD:
