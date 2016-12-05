@@ -34,4 +34,5 @@ public:
 	bool operator!=(Point p);
 
 	Point vector_mult(Point p);
+	double modulus();
 } Point, Vector;

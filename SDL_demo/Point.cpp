@@ -77,6 +77,10 @@ Point Point::vector_mult(Point p) {
 	return Point(y * p.z - z * p.y, z * p.x - x * p.z, x * p.y - y * p.x);
 }
 
+double Point::modulus() {
+	return sqrt(x * x + y * y + z * z);
+}
+
 bool Point::equals(float f1, float f2) {
 	return abs(f1 - f2) < ALMOST_ZERO;
 }

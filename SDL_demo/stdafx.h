@@ -23,6 +23,7 @@
 
 #define RAD(angle) ((angle) * M_PI / 180)
 #define NEXT(cur, max) (((cur) + 1) % (max))
+#define PREV(cur, max) ((cur) == 0 ? (max) - 1 : (cur) - 1)
 
 // Screen dimension constants
 const int	SCREEN_WIDTH = 1024;

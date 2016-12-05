@@ -17,6 +17,8 @@ void close();
 
 void add_3d_objects(int layer_count);
 
+Colour BACKGROUND = Colour(Colour::COLOUR_BLACK);
+
 const bool USES_3D = true;
 
 const int
@@ -38,7 +40,11 @@ const int
 	MAX_SHAPES_COUNT = 10,
 	// Section windows count limits
 	MIN_SECTION_COUNT = 1,
-	MAX_SECTION_COUNT = 5;
+	MAX_SECTION_COUNT = 5,
+	// Layers count in 3D scene limits
+	MIN_LAYER_COUNT = 1,
+	MAX_LAYER_COUNT = 5,
+	START_LAYER_COUNT = 2;
 		
 const float	
 	// Matrices initial values
@@ -206,10 +212,10 @@ void add_3d_objects(int layer_count) {
 		}
 	}*/
 
-	scene3d->add_object(new Shape3D(Point(0, -2 * SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
+	scene3d->add_object(new Shape3D(Point(0, -2 * SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));/*
 	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, 2 * SIDE_LENGTH), SIDE_LENGTH));
 	scene3d->add_object(new Shape3D(Point(0, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
-	scene3d->add_object(new Shape3D(Point(SIDE_LENGTH, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));
+	scene3d->add_object(new Shape3D(Point(SIDE_LENGTH, -SIDE_LENGTH, SIDE_LENGTH), SIDE_LENGTH));*/
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -230,6 +236,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			SDL_Event e;
 			bool quit = false;
 			int chosen_shape_count = 0;
+			int layer_count = START_LAYER_COUNT;
 			while (!quit) {
 				while (SDL_PollEvent(&e) != 0) {
 					if (SDL_QUIT == e.type) {
@@ -238,6 +245,26 @@ int _tmain(int argc, _TCHAR* argv[])
 					if (SDL_KEYDOWN == e.type) {
 						if (USES_3D) {
 							switch (e.key.keysym.scancode) {
+							case SDL_SCANCODE_UP:
+								if (layer_count < MAX_LAYER_COUNT) {
+									layer_count++;
+								}
+								printf("Layers - %d\n", layer_count);
+								break;
+							case SDL_SCANCODE_DOWN:
+								if (layer_count > MIN_LAYER_COUNT) {
+									layer_count--;
+								}
+								printf("Layers - %d\n", layer_count);
+								break;
+							case SDL_SCANCODE_B:
+								scene3d->set_base_line(new BrezenheimLine());
+								printf("Is using Brezenheim algorithm\n");
+								break;
+							case SDL_SCANCODE_N:
+								scene3d->set_base_line(new WuLine());
+								printf("Is using Wu algorithm\n");
+								break;
 							case SDL_SCANCODE_J:
 								scene3d->move(-STEP_T, 0, 0);
 								printf("left\n");
@@ -286,6 +313,14 @@ int _tmain(int argc, _TCHAR* argv[])
 								scene3d->rotate_z(-STEP_R);
 								printf("-z\n");
 								break;
+							case SDL_SCANCODE_Z:
+								scene3d->rotate_vector(Vector(402, 150, 224), STEP_R);
+								printf("+v\n");
+								break;
+							case SDL_SCANCODE_C:
+								scene3d->rotate_vector(Vector(402, 150, 224), -STEP_R);
+								printf("-v\n");
+								break;
 							case SDL_SCANCODE_PERIOD:
 								scene3d->scale(1-STEP_S);
 								printf("-s\n");
@@ -294,14 +329,6 @@ int _tmain(int argc, _TCHAR* argv[])
 								scene3d->scale(1+STEP_S);
 								printf("+s\n");
 								break;
-							/*case SDL_SCANCODE_Z:
-								shape3d->rotateAroundEdge(-2);
-								printf("");
-								break;
-							case SDL_SCANCODE_C:
-								shape3d->rotateAroundEdge(2);
-								printf("");
-								break;*/
 							}
 						} else {
 							int sides;
@@ -428,10 +455,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				SDL_RenderClear(gRenderer);
 
 				// Clearing the surface
-				SDL_FillRect(loadedSurface, NULL, Colour::COLOUR_BLACK);
+				SDL_FillRect(loadedSurface, NULL, BACKGROUND.get_value());
 
 				if (USES_3D) {
-					add_3d_objects(2);
+					add_3d_objects(layer_count);
 					scene3d->draw(loadedSurface);
 				} else {
 					for (int i = 0; i < total_count; i++)

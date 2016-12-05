@@ -101,6 +101,33 @@ void Scene3D::rotate_z(float d_angle) {
 	load_shift();
 }
 
+void Scene3D::rotate_vector(Vector vector, double d_angle) {
+	float rad_angle = RAD(d_angle);
+
+	save_shift();
+
+	double u = vector.x;
+	double v = vector.y;
+	double w = vector.z;
+
+	Matrix tmp = Matrix(4);
+
+	tmp.set_element(0, 0, (u * u + (v * v + w * w) * cos(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(0, 1, (u * v * (1 - cos(rad_angle)) - w * sqrt(u * u + v * v + w * w) * sin(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(0, 2, (u * v * (1 - cos(rad_angle)) + v * sqrt(u * u + v * v + w * w) * sin(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(1, 0, (u * v * (1 - cos(rad_angle)) + w * sqrt(u * u + v * v + w * w) * sin(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(1, 1, (u * u + (v * v + w * w) * cos(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(1, 2, (v * w * (1 - cos(rad_angle)) - u * sqrt(u * u + v * v + w * w) * sin(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(2, 0, (u * w * (1 - cos(rad_angle)) - v * sqrt(u * u + v * v + w * w) * sin(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(2, 1, (v * w * (1 - cos(rad_angle)) + u * sqrt(u * u + v * v + w * w) * sin(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(2, 2, (u * u + (v * v + w * w) * cos(rad_angle)) / (u * u + v * v + w * w));
+	tmp.set_element(3, 3, 1);
+
+	*matrix *= tmp;
+
+	load_shift();
+}
+
 void Scene3D::move(float dx, float dy, float dz) {
 	Matrix tmp = Matrix(4);
 	tmp.set_element(0, 0, 1);
@@ -130,6 +157,31 @@ void Scene3D::draw(SDL_Surface * s) {
 	for (int i = 0; i < objects.size(); i++)
 		objects.at(i)->recount(matrix);
 
+	std::vector<Facet> visible_facets = get_visible_facets();
+	std::vector<Facet> facets_to_draw = draw_facets(s, visible_facets);
+}
+
+Scene3D & Scene3D::operator=(const Scene3D & other) {
+	if (&other == this)
+		return *this;
+
+	colour = other.colour;
+	*base_line = *(other.base_line);
+	objects = other.objects;
+	*matrix = *(other.matrix);
+
+	return *this;
+}
+
+Point Scene3D::left_normal(Point p0, Point p1) {
+	return Point(p0.y - p1.y, p1.x - p0.x, 0);
+}
+
+Point Scene3D::right_normal(Point p0, Point p1) {
+	return Point(p1.y - p0.y, p0.x - p1.x, 0);
+}
+
+std::vector<Facet> Scene3D::get_visible_facets() {
 	std::vector<Facet> visible_facets;
 	for (int i = 0; i < objects.size(); i++) {
 		std::vector<Facet> object_visible_facets = objects.at(i)->get_visible_facets(observer);
@@ -143,22 +195,28 @@ void Scene3D::draw(SDL_Surface * s) {
 		return closest_point0.z > closest_point1.z;
 	});
 
+	return visible_facets;
+}
+
+std::vector<Facet> Scene3D::draw_facets(SDL_Surface* s, std::vector<Facet> visible_facets) {
+	std::vector<Facet> facets_to_draw;
 	for (int i = 0; i < visible_facets.size(); i++) {
 		Facet current_facet = visible_facets.at(i);
-		int side_count = current_facet.get_side_count();
+		int side_count = current_facet.get_point_count();
+		Facet facet_to_draw;
 		for (int facet_point_count = 0; facet_point_count < side_count; facet_point_count++) {
 			Point side_start = current_facet.get_point(facet_point_count);
 			Point side_finish = current_facet.get_point(NEXT(facet_point_count, side_count));
 
 			Point directrix = side_finish - side_start;
-			double t, t_low = 1, t_high = 0;
+			double t_low = 1, t_high = 0;
 			boolean is_entirely_visible = true;
 			for (int k = 0; k < i; k++) {
 				Facet sw_facet = visible_facets.at(k);
-				double tmp_t_low = 0, tmp_t_high = 1;
+				double t, tmp_t_low = 0, tmp_t_high = 1;
 				boolean is_entirely_visible_tmp = false;
 
-				int sw_side_count = sw_facet.get_side_count();
+				int sw_side_count = sw_facet.get_point_count();
 				for (int sw_facet_point_count = 0; sw_facet_point_count < sw_side_count; sw_facet_point_count++) {
 					Point sw_side_start = sw_facet.get_point(sw_facet_point_count);
 					Point sw_side_finish = sw_facet.get_point(NEXT(sw_facet_point_count, sw_side_count));
@@ -211,36 +269,42 @@ void Scene3D::draw(SDL_Surface * s) {
 			}
 			if (is_entirely_visible) {
 				base_line->draw(s, side_start, side_finish);
+				add_point_to_facet(side_start, &facet_to_draw);
+				add_point_to_facet(side_finish, &facet_to_draw);
 			} else if (t_low < t_high) {
 				Point low_point = side_start + (side_finish - side_start) * t_low;
 				Point high_point = side_start + (side_finish - side_start) * t_high;
-				if (side_start != low_point)
+				if (side_start != low_point && t_low != 0) {
 					base_line->draw(s, side_start, low_point);
-				if (high_point != side_finish)
+					add_point_to_facet(side_start, &facet_to_draw);
+					add_point_to_facet(low_point, &facet_to_draw);
+				}
+				if (high_point != side_finish && t_high != 1) {
 					base_line->draw(s, high_point, side_finish);
+					add_point_to_facet(high_point, &facet_to_draw);
+					add_point_to_facet(side_finish, &facet_to_draw);
+				}
 			}
 		}
+		if (facet_to_draw.get_point_count() != 0) {
+			facet_to_draw.fill(s, colour, observer);
+			facets_to_draw.push_back(facet_to_draw);
+		}
 	}
+
+	return facets_to_draw;
 }
 
-Scene3D & Scene3D::operator=(const Scene3D & other) {
-	if (&other == this)
-		return *this;
-
-	colour = other.colour;
-	*base_line = *(other.base_line);
-	objects = other.objects;
-	*matrix = *(other.matrix);
-
-	return *this;
-}
-
-Point Scene3D::left_normal(Point p0, Point p1) {
-	return Point(p0.y - p1.y, p1.x - p0.x, 0);
-}
-
-Point Scene3D::right_normal(Point p0, Point p1) {
-	return Point(p1.y - p0.y, p0.x - p1.x, 0);
+void Scene3D::add_point_to_facet(Point p, Facet* f) {
+	bool not_included = true;
+	for (int i = 0; i < f->get_point_count(); i++) {
+		if (p == f->get_point(i)) {
+			not_included = false;
+			break;
+		}
+	}
+	if (not_included)
+		f->add_point(p);
 }
 
 void Scene3D::save_shift() {
