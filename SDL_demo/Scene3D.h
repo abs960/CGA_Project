@@ -7,13 +7,8 @@
 #include "stdafx.h"
 
 class Scene3D {
-private:
-	Point store_shift;
-
-	void save_shift();
-	void load_shift();
-	void add_point_to_facet(Point p, Facet* f);
 protected:
+	Point store_shift;
 	Vector observer = Vector(0, 0, -1000);
 
 	std::vector<Shape3D*> objects;
@@ -26,6 +21,9 @@ protected:
 
 	std::vector<Facet> get_visible_facets();
 	std::vector<Facet> draw_facets(SDL_Surface* s, std::vector<Facet> visible_facets);
+	void save_shift();
+	void load_shift();
+	void add_point_to_facet(Point p, Facet* f);
 public:
 	Scene3D();
 	Scene3D(const Scene3D& copy);
@@ -38,14 +36,14 @@ public:
 	void set_base_line(Line* line);
 	void set_colour(Colour colour);
 
-	void rotate_x(float d_angle);
-	void rotate_y(float d_angle);
-	void rotate_z(float d_angle);
-	void rotate_vector(Vector vector, double d_angle);
-	void move(float dx, float dy, float dz);
-	void scale(float d_scale);
+	virtual void rotate_x(float d_angle);
+	virtual void rotate_y(float d_angle);
+	virtual void rotate_z(float d_angle);
+	virtual void rotate_vector(Vector vector, double d_angle);
+	virtual void move(float dx, float dy, float dz);
+	virtual void scale(float d_scale);
 
-	void draw(SDL_Surface* s);
+	virtual void draw(SDL_Surface* s);
 
 	Scene3D& operator=(const Scene3D& other);
 };

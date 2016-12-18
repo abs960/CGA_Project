@@ -13,8 +13,6 @@ Scene3D::Scene3D() {
 	matrix->set_element(0, 3, store_shift.x);
 	matrix->set_element(1, 3, store_shift.y);
 	matrix->set_element(2, 3, store_shift.z);
-	rotate_x(-30);
-	rotate_y(-30);
 }
 
 Scene3D::Scene3D(const Scene3D & copy) {
