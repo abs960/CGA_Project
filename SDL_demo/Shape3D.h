@@ -3,6 +3,7 @@
 #include "Point.h"
 #include "Facet.h"
 #include "Matrix.h"
+#include "Quaternion.h"
 
 class Shape3D {
 protected:
@@ -27,6 +28,8 @@ public:
 	int get_side_length();
 
 	void recount(Matrix* matrix);
+	void recount(Quaternion q);
+	void recount(Matrix* matrix, Quaternion q);
 	std::vector<Facet> get_visible_facets(Vector observer);
 
 	Shape3D& operator=(const Shape3D& other);

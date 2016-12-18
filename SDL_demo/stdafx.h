@@ -29,6 +29,6 @@
 const int	SCREEN_WIDTH = 1024;
 const int	SCREEN_HEIGHT = 640;
 // Radius for the shapes to draw in 2D OR actual side length of shapes in 3D
-const int	SIDE_LENGTH = 100;
+const int	SIDE_LENGTH = 50;
 // Used to compensate for possible mistakes in floating point types accuracy
 const float	ALMOST_ZERO = 0.000001;

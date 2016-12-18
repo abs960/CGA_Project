@@ -37,6 +37,8 @@ Shape3D * Scene3D::get_object(int count) {
 }
 
 void Scene3D::clear_scene() {
+	for (int i = 0; i < objects.size(); i++)
+		delete objects.at(i);
 	objects.clear();
 }
 
@@ -154,9 +156,7 @@ void Scene3D::scale(float d_scale) {
 }
 
 void Scene3D::draw(SDL_Surface * s) {
-	for (int i = 0; i < objects.size(); i++)
-		objects.at(i)->recount(matrix);
-
+	apply_transformation();
 	std::vector<Facet> visible_facets = get_visible_facets();
 	std::vector<Facet> facets_to_draw = draw_facets(s, visible_facets);
 }
@@ -179,6 +179,11 @@ Point Scene3D::left_normal(Point p0, Point p1) {
 
 Point Scene3D::right_normal(Point p0, Point p1) {
 	return Point(p1.y - p0.y, p0.x - p1.x, 0);
+}
+
+void Scene3D::apply_transformation() {
+	for (int i = 0; i < objects.size(); i++)
+		objects.at(i)->recount(matrix);
 }
 
 std::vector<Facet> Scene3D::get_visible_facets() {

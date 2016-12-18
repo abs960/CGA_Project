@@ -4,6 +4,7 @@
 #include "Line.h"
 #include "Matrix.h"
 #include <vector>
+#include "Quaternion.h"
 
 class Facet {
 protected:
@@ -18,6 +19,9 @@ public:
 	int get_point_count();
 
 	void recount(Matrix* matrix);
+	void recount(Quaternion q);
+	void recount(Matrix* matrix, Quaternion q);
+
 	Point get_closest_point();
 	bool is_visible(Vector observer);
 	Vector get_normal();

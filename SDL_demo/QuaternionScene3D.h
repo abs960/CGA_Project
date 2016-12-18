@@ -4,6 +4,9 @@
 #include "Quaternion.h"
 
 class QuaternionScene3D : public Scene3D {
+protected:
+	Quaternion quaternion;
+	void apply_transformation();
 public:
 	QuaternionScene3D();
 	QuaternionScene3D(const QuaternionScene3D& copy);

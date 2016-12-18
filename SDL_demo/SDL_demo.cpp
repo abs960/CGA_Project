@@ -16,9 +16,7 @@ void init_matrices();
 void destroy_shapes();
 void close();
 
-void add_3d_objects(int layer_count);
-
-void add_3d_objects(int layer_count);
+void add_3d_objects(int layer_count, int length);
 
 Colour BACKGROUND = Colour(Colour::COLOUR_BLACK);
 Vector ROTATION = Vector(300, 150, 225);
@@ -47,9 +45,13 @@ const int
 	MAX_SECTION_COUNT = 5,
 	// Layers count in 3D scene limits
 	MIN_LAYER_COUNT = 1,
-	MAX_LAYER_COUNT = 5,
+	MAX_LAYER_COUNT = 10,
 	START_LAYER_COUNT = 2,
-	MAX_TASK_COUNT = 3;
+	// 3D Task parameters
+	MAX_TASK_COUNT = 3,
+	START_SHAPE_LENGTH = 3,
+	MAX_SHAPE_LENGTH = 10,
+	MIN_SHAPE_LENGTH = 1;
 		
 const float	
 	// Matrices initial values
@@ -117,7 +119,7 @@ void init_shapes() {
 		scene3d = new QuaternionScene3D();
 		scene3d->set_base_line(new WuLine());
 		scene3d->set_colour(Colour(Colour::COLOUR_GREEN));
-		add_3d_objects(START_LAYER_COUNT);
+		add_3d_objects(START_LAYER_COUNT, START_SHAPE_LENGTH);
 	} else {
 		shapes_count = MIN_SHAPES_COUNT;
 		sections_count = MIN_SECTION_COUNT;
@@ -203,7 +205,7 @@ void close() {
 	SDL_Quit();
 }
 
-void add_3d_objects(int layer_count) {
+void add_3d_objects(int layer_count, int length) {
 	scene3d->clear_scene();
 	switch (task_count) {
 	case 0:
@@ -212,15 +214,15 @@ void add_3d_objects(int layer_count) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
 			for (int j = 0; j < i + 1; j++) {
 				int x = j * SIDE_LENGTH;
-				for (int k = 0; k < 5; k++) {
+				for (int k = 0; k < length; k++) {
 					int z = k * SIDE_LENGTH;
-					scene3d->add_object(new Shape3D(Point(x, y, z), 100));
+					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 			}
 		}
 		break;
 	case 1:
-		// cubes
+		// cube pyramid
 		for (int i = 0; i < layer_count; i++) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
 			for (int j = 0; j < i + 1; j++) {
@@ -234,19 +236,41 @@ void add_3d_objects(int layer_count) {
 		break;
 	case 2:
 		// cube with a hole
-		for (int i = 0; i < layer_count; i++) {
+		for (int i = 0; i < layer_count + 2; i++) {
+			int y = -i * SIDE_LENGTH;
+			if (i == 0 || i == layer_count + 1) {
+				for (int j = 0; j < layer_count + 2; j++) {
+					int x = j * SIDE_LENGTH;
+					for (int k = 0; k < length; k++) {
+						int z = k * SIDE_LENGTH;
+						scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+					}
+				}
+			} else {
+				int x = 0;
+				for (int j = 0; j < 2; j++) {
+					for (int k = 0; k < length; k++) {
+						int z = k * SIDE_LENGTH;
+						scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+					}
+					x += SIDE_LENGTH * (layer_count + 1);
+				}
+			}
+		}
+
+		/*for (int i = 0; i < layer_count; i++) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
 			int max = i % 2 == 0 ? 3 : 2;
 			for (int j = 0; j < 3;) {
 				int x = j * SIDE_LENGTH;
-				for (int k = 0; k < 5; k++) {
+				for (int k = 0; k < length; k++) {
 					int z = k * SIDE_LENGTH;
 					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 
 				j = max == 3 ? j + 1 : j + 2;
 			}
-		}
+		}*/
 		break;
 	case 3:
 		// spiral
@@ -255,15 +279,15 @@ void add_3d_objects(int layer_count) {
 		for (int i = 0; i < layer_count; i++) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
 			if (i % 2 == 0) {
-				for (int j = 0; j < 4; j++) {
+				for (int j = 0; j < length; j++) {
 					int x = j * SIDE_LENGTH;
-					int z = b ? 0 : 3 * SIDE_LENGTH;
+					int z = b ? 0 : (length - 1) * SIDE_LENGTH;
 					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 				b = !b;
 			} else {
-				int x = b0 ? 0 : 3 * SIDE_LENGTH;
-				for (int j = 0; j < 4; j++) {
+				int x = b0 ? 0 : (length - 1) * SIDE_LENGTH;
+				for (int j = 0; j < length; j++) {
 					int z = j * SIDE_LENGTH;
 					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
 				}
@@ -299,7 +323,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool quit = false;
 	int chosen_shape_count = 0;
 	int layer_count = START_LAYER_COUNT;
-	task_count = 0;
+	int length = START_SHAPE_LENGTH;
+	task_count = 1;
 	while (!quit) {
 		while (SDL_PollEvent(&e) != 0) {
 			if (SDL_QUIT == e.type) {
@@ -319,6 +344,18 @@ int _tmain(int argc, _TCHAR* argv[])
 							layer_count--;
 						}
 						printf("Layers - %d\n", layer_count);
+						break;
+					case SDL_SCANCODE_RIGHT:
+						if (length < MAX_SHAPE_LENGTH) {
+							length++;
+						}
+						printf("Length - %d\n", length);
+						break;
+					case SDL_SCANCODE_LEFT:
+						if (length > MIN_SHAPE_LENGTH) {
+							length--;
+						}
+						printf("Length - %d\n", length);
 						break;
 					case SDL_SCANCODE_B:
 						scene3d->set_base_line(new BrezenheimLine());
@@ -529,7 +566,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		SDL_FillRect(loadedSurface, NULL, BACKGROUND.get_value());
 
 		if (USES_3D) {
-			add_3d_objects(layer_count);
+			add_3d_objects(layer_count, length);
 			scene3d->draw(loadedSurface);
 		} else {
 			for (int i = 0; i < total_count; i++)

@@ -34,6 +34,31 @@ void Facet::recount(Matrix * matrix) {
 	}
 }
 
+void Facet::recount(Quaternion q) {
+	for (int i = 0; i < points.size(); i++) {
+		Point point = points.at(i);
+		Point tmp = q.transform(point);
+		points[i] = tmp;
+	}
+}
+
+void Facet::recount(Matrix * matrix, Quaternion q) {
+	for (int i = 0; i < points.size(); i++) {
+		Point point = points.at(i);
+		Point tmp = q.transform(point);
+
+		std::vector<double> v;
+		v.push_back(tmp.x);
+		v.push_back(tmp.y);
+		v.push_back(tmp.z);
+		v.push_back(1);
+		std::vector<double> res = (*matrix) * v;
+		points[i].x = res.at(0);
+		points[i].y = res.at(1);
+		points[i].z = res.at(2);
+	}
+}
+
 Point Facet::get_closest_point() {
 	float min_z = INFINITY;
 	int min_z_count = -1;

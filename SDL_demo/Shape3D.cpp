@@ -45,6 +45,18 @@ void Shape3D::recount(Matrix * matrix) {
 	}
 }
 
+void Shape3D::recount(Quaternion q) {
+	for (int i = 0; i < facet_count; i++) {
+		facets[i].recount(q);
+	}
+}
+
+void Shape3D::recount(Matrix * matrix, Quaternion q) {
+	for (int i = 0; i < facet_count; i++) {
+		facets[i].recount(matrix, q);
+	}
+}
+
 std::vector<Facet> Shape3D::get_visible_facets(Vector observer) {
 	std::vector<Facet> res;
 	for (int i = 0; i < facet_count; i++)

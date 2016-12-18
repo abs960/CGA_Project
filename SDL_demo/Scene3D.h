@@ -19,6 +19,7 @@ protected:
 	Point left_normal(Point p0, Point p1);
 	Point right_normal(Point p0, Point p1);
 
+	virtual void apply_transformation();
 	std::vector<Facet> get_visible_facets();
 	std::vector<Facet> draw_facets(SDL_Surface* s, std::vector<Facet> visible_facets);
 	void save_shift();

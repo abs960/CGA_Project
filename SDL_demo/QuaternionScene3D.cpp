@@ -3,6 +3,7 @@
 QuaternionScene3D::QuaternionScene3D() {
 	colour = Colour();
 	matrix = new Matrix(4);
+	quaternion = Quaternion();
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++) {
 			double element = i == j ? 1 : 0;
@@ -20,6 +21,7 @@ QuaternionScene3D::QuaternionScene3D(const QuaternionScene3D & copy) {
 	*base_line = *(copy.base_line);
 	objects = copy.objects;
 	*matrix = *(copy.matrix);
+	quaternion = copy.quaternion;
 }
 
 QuaternionScene3D::~QuaternionScene3D() {}
@@ -40,8 +42,7 @@ void QuaternionScene3D::rotate_vector(Vector vector, double d_angle) {
 	save_shift();
 
 	Quaternion q = Quaternion(d_angle, vector);
-	Matrix tmp = q.to_matrix();
-	*matrix *= tmp;
+	quaternion = quaternion * q;
 
 	load_shift();
 }
@@ -54,6 +55,14 @@ QuaternionScene3D & QuaternionScene3D::operator=(const QuaternionScene3D & other
 	*base_line = *(other.base_line);
 	objects = other.objects;
 	*matrix = *(other.matrix);
+	quaternion = other.quaternion;
 
 	return *this;
+}
+
+void QuaternionScene3D::apply_transformation() {
+	for (int i = 0; i < objects.size(); i++) {
+		objects.at(i)->recount(quaternion);
+		objects.at(i)->recount(matrix);
+	}
 }
