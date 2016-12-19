@@ -9,6 +9,7 @@
 #include "CyrusBeckLine.h"
 #include "Scene3D.h"
 #include "QuaternionScene3D.h"
+#include "PerspectiveShape3D.h"
 
 bool init();
 void init_shapes();
@@ -212,11 +213,12 @@ void add_3d_objects(int layer_count, int length) {
 		// stairs
 		for (int i = 0; i < layer_count; i++) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
+			int x = -(layer_count * SIDE_LENGTH) / 2;
 			for (int j = 0; j < i + 1; j++) {
-				int x = j * SIDE_LENGTH;
+				x += SIDE_LENGTH;
 				for (int k = 0; k < length; k++) {
 					int z = k * SIDE_LENGTH;
-					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 			}
 		}
@@ -225,11 +227,12 @@ void add_3d_objects(int layer_count, int length) {
 		// cube pyramid
 		for (int i = 0; i < layer_count; i++) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
+			int x = -(layer_count * SIDE_LENGTH) / 2;
 			for (int j = 0; j < i + 1; j++) {
-				int x = j * SIDE_LENGTH;
+				x += SIDE_LENGTH;
 				for (int k = i - j + 1; k > 0; k--) {
-					int z = (k)* SIDE_LENGTH;
-					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+					int z = k * SIDE_LENGTH;
+					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 			}
 		}
@@ -239,38 +242,25 @@ void add_3d_objects(int layer_count, int length) {
 		for (int i = 0; i < layer_count + 2; i++) {
 			int y = -i * SIDE_LENGTH;
 			if (i == 0 || i == layer_count + 1) {
+				int x = -((layer_count + 2) * SIDE_LENGTH) / 2;
 				for (int j = 0; j < layer_count + 2; j++) {
-					int x = j * SIDE_LENGTH;
 					for (int k = 0; k < length; k++) {
 						int z = k * SIDE_LENGTH;
-						scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+						scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 					}
+					x += SIDE_LENGTH;
 				}
 			} else {
-				int x = 0;
+				int x = -((layer_count + 2) * SIDE_LENGTH) / 2;
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < length; k++) {
 						int z = k * SIDE_LENGTH;
-						scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+						scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 					}
 					x += SIDE_LENGTH * (layer_count + 1);
 				}
 			}
 		}
-
-		/*for (int i = 0; i < layer_count; i++) {
-			int y = -(layer_count - i) * SIDE_LENGTH;
-			int max = i % 2 == 0 ? 3 : 2;
-			for (int j = 0; j < 3;) {
-				int x = j * SIDE_LENGTH;
-				for (int k = 0; k < length; k++) {
-					int z = k * SIDE_LENGTH;
-					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
-				}
-
-				j = max == 3 ? j + 1 : j + 2;
-			}
-		}*/
 		break;
 	case 3:
 		// spiral
@@ -279,17 +269,19 @@ void add_3d_objects(int layer_count, int length) {
 		for (int i = 0; i < layer_count; i++) {
 			int y = -(layer_count - i) * SIDE_LENGTH;
 			if (i % 2 == 0) {
-				for (int j = 0; j < length; j++) {
-					int x = j * SIDE_LENGTH;
-					int z = b ? 0 : (length - 1) * SIDE_LENGTH;
-					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+				int x = -SIDE_LENGTH + (-length * SIDE_LENGTH) / 2;
+				for (int j = 0; j < length + 1; j++) {
+					x += SIDE_LENGTH;
+					int z = b ? 0 : (length) * SIDE_LENGTH;
+					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 				b = !b;
 			} else {
-				int x = b0 ? 0 : (length - 1) * SIDE_LENGTH;
-				for (int j = 0; j < length; j++) {
+				int x = b0 ? 0 : (length) * SIDE_LENGTH;
+				x += (-length * SIDE_LENGTH) / 2;
+				for (int j = 0; j < length + 1; j++) {
 					int z = j * SIDE_LENGTH;
-					scene3d->add_object(new Shape3D(Point(x, y, z), SIDE_LENGTH));
+					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 				b0 = !b0;
 			}
@@ -358,12 +350,18 @@ int _tmain(int argc, _TCHAR* argv[])
 						printf("Length - %d\n", length);
 						break;
 					case SDL_SCANCODE_B:
+						scene3d->set_lines_visible(true);
 						scene3d->set_base_line(new BrezenheimLine());
 						printf("Is using Brezenheim algorithm\n");
 						break;
-					case SDL_SCANCODE_N:
+					case SDL_SCANCODE_V:
+						scene3d->set_lines_visible(true);
 						scene3d->set_base_line(new WuLine());
 						printf("Is using Wu algorithm\n");
+						break;
+					case SDL_SCANCODE_N:
+						scene3d->set_lines_visible(false);
+						printf("Lines hidden\n");
 						break;
 					case SDL_SCANCODE_J:
 						scene3d->move(-STEP_T, 0, 0);

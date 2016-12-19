@@ -6,6 +6,8 @@
 class QuaternionScene3D : public Scene3D {
 protected:
 	Quaternion quaternion;
+	Vector angles;
+
 	void apply_transformation();
 public:
 	QuaternionScene3D();
@@ -16,6 +18,7 @@ public:
 	virtual void rotate_y(float d_angle);
 	virtual void rotate_z(float d_angle);
 	virtual void rotate_vector(Vector vector, double d_angle);
+	virtual void move(float dx, float dy, float dz);
 
 	QuaternionScene3D& operator=(const QuaternionScene3D& other);
 };

@@ -22,8 +22,8 @@ public:
 
 	int get_width();
 	int get_height();
-	double get_element(int row, int col);
-	void set_element(int row, int col, double value);
+	double get_element(int col, int row);
+	void set_element(int col, int row, double value);
 
 	Matrix& operator=(const Matrix &other);
 

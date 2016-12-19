@@ -2,6 +2,7 @@
 
 Scene3D::Scene3D() {
 	colour = Colour();
+	lines_visible = true;
 	matrix = new Matrix(4);
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++) {
@@ -20,12 +21,17 @@ Scene3D::Scene3D(const Scene3D & copy) {
 	*base_line = *(copy.base_line);
 	objects = copy.objects;
 	*matrix = *(copy.matrix);
+	lines_visible = copy.lines_visible;
 }
 
 Scene3D::~Scene3D() {
 	delete matrix;
 	if (base_line != nullptr)
 		delete base_line;
+}
+
+void Scene3D::set_lines_visible(bool flag) {
+	lines_visible = flag;
 }
 
 void Scene3D::add_object(Shape3D * object) {
@@ -169,6 +175,7 @@ Scene3D & Scene3D::operator=(const Scene3D & other) {
 	*base_line = *(other.base_line);
 	objects = other.objects;
 	*matrix = *(other.matrix);
+	lines_visible = other.lines_visible;
 
 	return *this;
 }
@@ -273,19 +280,22 @@ std::vector<Facet> Scene3D::draw_facets(SDL_Surface* s, std::vector<Facet> visib
 				}
 			}
 			if (is_entirely_visible) {
-				base_line->draw(s, side_start, side_finish);
+				if (lines_visible)
+					base_line->draw(s, side_start, side_finish);
 				add_point_to_facet(side_start, &facet_to_draw);
 				add_point_to_facet(side_finish, &facet_to_draw);
 			} else if (t_low < t_high) {
 				Point low_point = side_start + (side_finish - side_start) * t_low;
 				Point high_point = side_start + (side_finish - side_start) * t_high;
 				if (side_start != low_point && t_low != 0) {
-					base_line->draw(s, side_start, low_point);
+					if (lines_visible)
+						base_line->draw(s, side_start, low_point);
 					add_point_to_facet(side_start, &facet_to_draw);
 					add_point_to_facet(low_point, &facet_to_draw);
 				}
 				if (high_point != side_finish && t_high != 1) {
-					base_line->draw(s, high_point, side_finish);
+					if (lines_visible)
+						base_line->draw(s, high_point, side_finish);
 					add_point_to_facet(high_point, &facet_to_draw);
 					add_point_to_facet(side_finish, &facet_to_draw);
 				}

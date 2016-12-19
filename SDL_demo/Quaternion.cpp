@@ -15,7 +15,7 @@ Quaternion::~Quaternion() {}
 
 void Quaternion::set_rotation_axis(double angle, Vector axis) {
 	rotation = cos(RAD(angle / 2));
-	Vector normalized = normalize_vector(axis);
+	Vector normalized = axis.get_normalized();
 	q_vector.x = normalized.x * sin(RAD(angle / 2));
 	q_vector.y = normalized.y * sin(RAD(angle / 2));
 	q_vector.z = normalized.z * sin(RAD(angle / 2));
@@ -141,17 +141,4 @@ Quaternion Quaternion::operator*(double d) {
 	q.q_vector.z = q_vector.z * d;
 
 	return q;
-}
-
-Vector Quaternion::normalize_vector(Vector v) {
-	double length = v.modulus();
-
-	if (abs(length) < ALMOST_ZERO)
-		return v;
-
-	Vector normalized;
-	normalized.x = v.x / length;
-	normalized.y = v.y / length;
-	normalized.z = v.z / length;
-	return normalized;
 }

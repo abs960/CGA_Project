@@ -15,13 +15,14 @@ protected:
 	Line* base_line;
 	Matrix* matrix;
 	Colour colour;
+	bool lines_visible;
 
 	Point left_normal(Point p0, Point p1);
 	Point right_normal(Point p0, Point p1);
 
 	virtual void apply_transformation();
-	std::vector<Facet> get_visible_facets();
-	std::vector<Facet> draw_facets(SDL_Surface* s, std::vector<Facet> visible_facets);
+	virtual std::vector<Facet> get_visible_facets();
+	virtual std::vector<Facet> draw_facets(SDL_Surface* s, std::vector<Facet> visible_facets);
 	void save_shift();
 	void load_shift();
 	void add_point_to_facet(Point p, Facet* f);
@@ -30,6 +31,7 @@ public:
 	Scene3D(const Scene3D& copy);
 	~Scene3D();
 
+	void set_lines_visible(bool flag);
 	void add_object(Shape3D* object);
 	Shape3D* get_object(int count);
 	void clear_scene();

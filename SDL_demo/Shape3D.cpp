@@ -39,6 +39,10 @@ int Shape3D::get_side_length() {
 	return side_length;
 }
 
+void Shape3D::set_angle(Vector angle) {
+	angles = angle;
+}
+
 void Shape3D::recount(Matrix * matrix) {
 	for (int i = 0; i < facet_count; i++) {
 		facets[i].recount(matrix);

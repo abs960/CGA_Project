@@ -94,6 +94,7 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MatrixShape2D.h" />
     <ClInclude Include="NestedShape2D.h" />
+    <ClInclude Include="PerspectiveShape3D.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="QuaternionScene3D.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixShape2D.cpp" />
     <ClCompile Include="NestedShape2D.cpp" />
+    <ClCompile Include="PerspectiveShape3D.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="QuaternionScene3D.cpp" />

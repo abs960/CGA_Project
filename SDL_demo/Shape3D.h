@@ -13,6 +13,7 @@ protected:
 	Facet* facets;
 	int facet_count;
 	int side_length;
+	Vector angles;
 
 	void init_facets();
 	void add_points_to_facet(int facet_num, std::vector<Point> points);
@@ -26,10 +27,11 @@ public:
 	int get_facet_count();
 	void set_side_length(int side_length);
 	int get_side_length();
+	void set_angle(Vector angle);
 
-	void recount(Matrix* matrix);
-	void recount(Quaternion q);
-	void recount(Matrix* matrix, Quaternion q);
+	virtual void recount(Matrix* matrix);
+	virtual void recount(Quaternion q);
+	virtual void recount(Matrix* matrix, Quaternion q);
 	std::vector<Facet> get_visible_facets(Vector observer);
 
 	Shape3D& operator=(const Shape3D& other);

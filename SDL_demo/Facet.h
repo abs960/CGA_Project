@@ -21,7 +21,7 @@ public:
 	void recount(Matrix* matrix);
 	void recount(Quaternion q);
 	void recount(Matrix* matrix, Quaternion q);
-
+	void apply_perspective(Point projection_center, Vector angles);
 	Point get_closest_point();
 	bool is_visible(Vector observer);
 	Vector get_normal();

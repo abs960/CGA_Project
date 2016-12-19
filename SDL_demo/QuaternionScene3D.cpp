@@ -2,6 +2,7 @@
 
 QuaternionScene3D::QuaternionScene3D() {
 	colour = Colour();
+	lines_visible = true;
 	matrix = new Matrix(4);
 	quaternion = Quaternion();
 	for (int i = 0; i < 4; i++)
@@ -22,6 +23,7 @@ QuaternionScene3D::QuaternionScene3D(const QuaternionScene3D & copy) {
 	objects = copy.objects;
 	*matrix = *(copy.matrix);
 	quaternion = copy.quaternion;
+	lines_visible = copy.lines_visible;
 }
 
 QuaternionScene3D::~QuaternionScene3D() {}
@@ -41,10 +43,25 @@ void QuaternionScene3D::rotate_z(float d_angle) {
 void QuaternionScene3D::rotate_vector(Vector vector, double d_angle) {
 	save_shift();
 
+	Vector delta_angle = vector.get_normalized() * d_angle;
+	angles = angles + delta_angle;
+
 	Quaternion q = Quaternion(d_angle, vector);
 	quaternion = quaternion * q;
 
 	load_shift();
+}
+
+void QuaternionScene3D::move(float dx, float dy, float dz) {
+	Matrix tmp = Matrix(4);
+	tmp.set_element(0, 0, 1);
+	tmp.set_element(1, 1, 1);
+	tmp.set_element(2, 2, 1);
+	tmp.set_element(3, 3, 1);
+	tmp.set_element(0, 3, dx);
+	tmp.set_element(1, 3, dy);
+	tmp.set_element(2, 3, dz);
+	*matrix *= tmp;
 }
 
 QuaternionScene3D & QuaternionScene3D::operator=(const QuaternionScene3D & other) {
@@ -56,13 +73,14 @@ QuaternionScene3D & QuaternionScene3D::operator=(const QuaternionScene3D & other
 	objects = other.objects;
 	*matrix = *(other.matrix);
 	quaternion = other.quaternion;
+	lines_visible = other.lines_visible;
 
 	return *this;
 }
 
 void QuaternionScene3D::apply_transformation() {
 	for (int i = 0; i < objects.size(); i++) {
-		objects.at(i)->recount(quaternion);
-		objects.at(i)->recount(matrix);
+		objects.at(i)->set_angle(angles);
+		objects.at(i)->recount(matrix, quaternion);
 	}
 }

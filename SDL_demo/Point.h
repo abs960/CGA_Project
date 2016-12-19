@@ -35,4 +35,5 @@ public:
 
 	Point vector_mult(Point p);
 	double modulus();
+	Point get_normalized();
 } Point, Vector;

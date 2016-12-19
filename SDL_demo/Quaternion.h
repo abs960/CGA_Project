@@ -7,8 +7,6 @@ class Quaternion {
 protected:
 	double rotation;
 	Vector q_vector;
-
-	Vector normalize_vector(Vector v);
 public:
 
 	Quaternion();

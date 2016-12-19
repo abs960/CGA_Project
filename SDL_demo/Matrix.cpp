@@ -33,12 +33,12 @@ int Matrix::get_height() {
 	return height;
 }
 
-double Matrix::get_element(int row, int col) {
-	return elements[row][col];
+double Matrix::get_element(int col, int row) {
+	return elements[col][row];
 }
 
-void Matrix::set_element(int row, int col, double value) {
-	elements[row][col] = value;
+void Matrix::set_element(int col, int row, double value) {
+	elements[col][row] = value;
 }
 
 Matrix& Matrix::operator=(const Matrix& other) {

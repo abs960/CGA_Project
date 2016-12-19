@@ -81,6 +81,19 @@ double Point::modulus() {
 	return sqrt(x * x + y * y + z * z);
 }
 
+Point Point::get_normalized() {
+	double length = modulus();
+
+	if (abs(length) < ALMOST_ZERO)
+		return *this;
+
+	Vector normalized;
+	normalized.x = x / length;
+	normalized.y = y / length;
+	normalized.z = z / length;
+	return normalized;
+}
+
 bool Point::equals(float f1, float f2) {
 	return abs(f1 - f2) < ALMOST_ZERO;
 }
