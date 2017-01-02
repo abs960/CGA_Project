@@ -5,7 +5,7 @@ PerspectiveShape3D::PerspectiveShape3D() : PerspectiveShape3D(Point(), DEFAULT_S
 PerspectiveShape3D::PerspectiveShape3D(Point pivot, int side_length) {
 	this->pivot = pivot;
 	this->side_length = side_length;
-	projection_center = Point(/*-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2*/0, 0, -500);
+	projection_center = Point(0, 0, 750);
 	init_facets();
 }
 
@@ -25,22 +25,22 @@ PerspectiveShape3D::~PerspectiveShape3D() {}
 
 void PerspectiveShape3D::recount(Matrix * matrix) {
 	for (int i = 0; i < facet_count; i++) {
-		facets[i].apply_perspective(projection_center, angles);
 		facets[i].recount(matrix);
+		facets[i].apply_perspective(projection_center, angles);
 	}
 }
 
 void PerspectiveShape3D::recount(Quaternion q) {
 	for (int i = 0; i < facet_count; i++) {
-		facets[i].apply_perspective(projection_center, angles);
 		facets[i].recount(q);
+		facets[i].apply_perspective(projection_center, angles);
 	}
 }
 
 void PerspectiveShape3D::recount(Matrix * matrix, Quaternion q) {
 	for (int i = 0; i < facet_count; i++) {
-		facets[i].apply_perspective(projection_center, angles);
 		facets[i].recount(matrix, q);
+		facets[i].apply_perspective(projection_center, angles);
 	}
 }
 

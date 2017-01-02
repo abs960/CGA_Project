@@ -62,57 +62,13 @@ void Facet::recount(Matrix * matrix, Quaternion q) {
 void Facet::apply_perspective(Point projection_center, Vector angles) {
 	for (int i = 0; i < points.size(); i++) {
 		Point cur = points.at(i);
-		
-		double x = cur.x;
-		double y = cur.y;
 
-		double projection_z = sqrt(x * x + y * y + projection_center.z * projection_center.z);
-
-		double d = 1 + (cur.z * cos(RAD(angles.x)) * cos(RAD(angles.y))) / (projection_z);
+		double d = 1 + (cur.z) / (projection_center.z);
 		points[i] = Point(
 			cur.x * d, 
 			cur.y * d,
-			cur.z * d
+			cur.z
 		);
-
-		/*Matrix tmp = Matrix(4);
-		tmp.set_element(0, 0, 1);
-		tmp.set_element(1, 1, 1);
-		tmp.set_element(2, 2, 1);
-		tmp.set_element(3, 3, 1);
-		tmp.set_element(3, 2, 1 / projection_center.z * cos(RAD(angles.x)) * cos(RAD(angles.y)));
-
-		std::vector<double> v;
-		v.push_back(cur.x);
-		v.push_back(cur.y);
-		v.push_back(cur.z);
-		v.push_back(1);
-		std::vector<double> res = tmp * v;
-
-		double r = 1 / (projection_center.z * cos(RAD(angles.x)) * cos(RAD(angles.y)));
-		double d = 1 + r * cur.z;
-
-		points[i].x = cur.x / d;
-		points[i].y = cur.y / d;
-		points[i].z = cur.z;*/
-
-		/*double angle_k = cos(RAD(angles.x)) * cos(RAD(angles.y));
-		double projection_z = projection_center.z * angle_k;
-		double delta_z = 0;
-		if (projection_z < 0 && cur.z < 0) {
-			delta_z = abs(projection_z - cur.z);
-		} else if (projection_z < 0 && cur.z > 0) {
-			delta_z = abs(projection_z) + cur.z;
-		} else if (projection_z > 0 && cur.z < 0) {
-			delta_z = projection_z + abs(cur.z);
-		} else {
-			delta_z = abs(projection_z - cur.z);
-		}
-
-		double d = delta_z / abs(projection_z);
-		points[i].x = cur.x * d;
-		points[i].y = cur.y * d;
-		points[i].z = cur.z * d;*/
 	}
 }
 

@@ -17,7 +17,7 @@ void init_matrices();
 void destroy_shapes();
 void close();
 
-void add_3d_objects(int layer_count, int length);
+void add_3d_objects(Scene3D* scene, int layer_count, int length);
 
 Colour BACKGROUND = Colour(Colour::COLOUR_BLACK);
 Vector ROTATION = Vector(300, 150, 225);
@@ -76,7 +76,8 @@ int	shapes_count,
 	total_count,
 	task_count;
 
-Scene3D* scene3d;
+Scene3D* left_scene;
+Scene3D* right_scene;
 
 bool init()
 {
@@ -116,11 +117,17 @@ bool init()
 
 void init_shapes() {
 	if (USES_3D) {
-		//scene3d = new Scene3D();
-		scene3d = new QuaternionScene3D();
-		scene3d->set_base_line(new WuLine());
-		scene3d->set_colour(Colour(Colour::COLOUR_GREEN));
-		add_3d_objects(START_LAYER_COUNT, START_SHAPE_LENGTH);
+		left_scene = new QuaternionScene3D();
+		left_scene->set_base_line(new WuLine());
+		left_scene->set_colour(Colour(Colour::COLOUR_GREEN));
+		add_3d_objects(left_scene, START_LAYER_COUNT, START_SHAPE_LENGTH);
+		left_scene->move(-200, 0, 0);
+
+		right_scene = new QuaternionScene3D();
+		right_scene->set_base_line(new WuLine());
+		right_scene->set_colour(Colour(Colour::COLOUR_GREEN));
+		add_3d_objects(right_scene, START_LAYER_COUNT, START_SHAPE_LENGTH);
+		right_scene->move(200, 0, 0);
 	} else {
 		shapes_count = MIN_SHAPES_COUNT;
 		sections_count = MIN_SECTION_COUNT;
@@ -187,7 +194,8 @@ void init_matrices() {
 
 void destroy_shapes() {
 	if (USES_3D) {
-		delete scene3d;
+		delete left_scene;
+		delete right_scene;
 	} else {
 		for (int i = 0; i < total_count; i++)
 			delete shapes[i];
@@ -206,8 +214,8 @@ void close() {
 	SDL_Quit();
 }
 
-void add_3d_objects(int layer_count, int length) {
-	scene3d->clear_scene();
+void add_3d_objects(Scene3D* scene, int layer_count, int length) {
+	scene->clear_scene();
 	switch (task_count) {
 	case 0:
 		// stairs
@@ -218,7 +226,7 @@ void add_3d_objects(int layer_count, int length) {
 				x += SIDE_LENGTH;
 				for (int k = 0; k < length; k++) {
 					int z = k * SIDE_LENGTH;
-					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
+					scene->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 			}
 		}
@@ -232,7 +240,7 @@ void add_3d_objects(int layer_count, int length) {
 				x += SIDE_LENGTH;
 				for (int k = i - j + 1; k > 0; k--) {
 					int z = k * SIDE_LENGTH;
-					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
+					scene->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 			}
 		}
@@ -246,7 +254,7 @@ void add_3d_objects(int layer_count, int length) {
 				for (int j = 0; j < layer_count + 2; j++) {
 					for (int k = 0; k < length; k++) {
 						int z = k * SIDE_LENGTH;
-						scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
+						scene->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 					}
 					x += SIDE_LENGTH;
 				}
@@ -255,7 +263,7 @@ void add_3d_objects(int layer_count, int length) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < length; k++) {
 						int z = k * SIDE_LENGTH;
-						scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
+						scene->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 					}
 					x += SIDE_LENGTH * (layer_count + 1);
 				}
@@ -273,7 +281,7 @@ void add_3d_objects(int layer_count, int length) {
 				for (int j = 0; j < length + 1; j++) {
 					x += SIDE_LENGTH;
 					int z = b ? 0 : (length) * SIDE_LENGTH;
-					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
+					scene->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 				b = !b;
 			} else {
@@ -281,7 +289,7 @@ void add_3d_objects(int layer_count, int length) {
 				x += (-length * SIDE_LENGTH) / 2;
 				for (int j = 0; j < length + 1; j++) {
 					int z = j * SIDE_LENGTH;
-					scene3d->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
+					scene->add_object(new PerspectiveShape3D(Point(x, y, z), SIDE_LENGTH));
 				}
 				b0 = !b0;
 			}
@@ -350,81 +358,102 @@ int _tmain(int argc, _TCHAR* argv[])
 						printf("Length - %d\n", length);
 						break;
 					case SDL_SCANCODE_B:
-						scene3d->set_lines_visible(true);
-						scene3d->set_base_line(new BrezenheimLine());
+						left_scene->set_lines_visible(true);
+						left_scene->set_base_line(new BrezenheimLine());
+						right_scene->set_lines_visible(true);
+						right_scene->set_base_line(new BrezenheimLine());
 						printf("Is using Brezenheim algorithm\n");
 						break;
 					case SDL_SCANCODE_V:
-						scene3d->set_lines_visible(true);
-						scene3d->set_base_line(new WuLine());
+						left_scene->set_lines_visible(true);
+						left_scene->set_base_line(new WuLine());
+						right_scene->set_lines_visible(true);
+						right_scene->set_base_line(new WuLine());
 						printf("Is using Wu algorithm\n");
 						break;
 					case SDL_SCANCODE_N:
-						scene3d->set_lines_visible(false);
+						left_scene->set_lines_visible(false);
+						right_scene->set_lines_visible(false);
 						printf("Lines hidden\n");
 						break;
 					case SDL_SCANCODE_J:
-						scene3d->move(-STEP_T, 0, 0);
+						left_scene->move(-STEP_T, 0, 0);
+						right_scene->move(STEP_T, 0, 0);
 						printf("left\n");
 						break;
 					case SDL_SCANCODE_L:
-						scene3d->move(STEP_T, 0, 0);
+						left_scene->move(STEP_T, 0, 0);
+						right_scene->move(-STEP_T, 0, 0);
 						printf("right\n");
 						break;
 					case SDL_SCANCODE_I:
-						scene3d->move(0, -STEP_T, 0);
+						left_scene->move(0, -STEP_T, 0);
+						right_scene->move(0, -STEP_T, 0);
 						printf("up\n");
 						break;
 					case SDL_SCANCODE_K:
-						scene3d->move(0, STEP_T, 0);
+						left_scene->move(0, STEP_T, 0);
+						right_scene->move(0, STEP_T, 0);
 						printf("down\n");
 						break;
 					case SDL_SCANCODE_U:
-						scene3d->move(0, 0, -STEP_T);
+						left_scene->move(0, 0, -STEP_T);
+						right_scene->move(0, 0, -STEP_T);
 						printf("out\n");
 						break;
 					case SDL_SCANCODE_O:
-						scene3d->move(0, 0, STEP_T);
+						left_scene->move(0, 0, STEP_T);
+						right_scene->move(0, 0, STEP_T);
 						printf("in\n");
 						break;
 					case SDL_SCANCODE_S:
-						scene3d->rotate_x(STEP_R);
+						left_scene->rotate_x(STEP_R);
+						right_scene->rotate_x(STEP_R);
 						printf("+x\n");
 						break;
 					case SDL_SCANCODE_W:
-						scene3d->rotate_x(-STEP_R);
+						left_scene->rotate_x(-STEP_R);
+						right_scene->rotate_x(-STEP_R);
 						printf("-x\n");
 						break;
 					case SDL_SCANCODE_D:
-						scene3d->rotate_y(STEP_R);
+						left_scene->rotate_y(STEP_R);
+						right_scene->rotate_y(STEP_R);
 						printf("+y\n");
 						break;
 					case SDL_SCANCODE_A:
-						scene3d->rotate_y(-STEP_R);
+						left_scene->rotate_y(-STEP_R);
+						right_scene->rotate_y(-STEP_R);
 						printf("-y\n");
 						break;
 					case SDL_SCANCODE_E:
-						scene3d->rotate_z(STEP_R);
+						left_scene->rotate_z(STEP_R);
+						right_scene->rotate_z(STEP_R);
 						printf("+z\n");
 						break;
 					case SDL_SCANCODE_Q:
-						scene3d->rotate_z(-STEP_R);
+						left_scene->rotate_z(-STEP_R);
+						right_scene->rotate_z(-STEP_R);
 						printf("-z\n");
 						break;
 					case SDL_SCANCODE_Z:
-						scene3d->rotate_vector(ROTATION, STEP_R);
+						left_scene->rotate_vector(ROTATION, STEP_R);
+						right_scene->rotate_vector(ROTATION, STEP_R);
 						printf("+v\n");
 						break;
 					case SDL_SCANCODE_C:
-						scene3d->rotate_vector(ROTATION, -STEP_R);
+						left_scene->rotate_vector(ROTATION, -STEP_R);
+						right_scene->rotate_vector(ROTATION, -STEP_R);
 						printf("-v\n");
 						break;
 					case SDL_SCANCODE_PERIOD:
-						scene3d->scale(1-STEP_S);
+						left_scene->scale(1 - STEP_S);
+						right_scene->scale(1 - STEP_S);
 						printf("-s\n");
 						break;
 					case SDL_SCANCODE_SLASH:
-						scene3d->scale(1+STEP_S);
+						left_scene->scale(1 + STEP_S);
+						right_scene->scale(1 + STEP_S);
 						printf("+s\n");
 						break;
 					case SDL_SCANCODE_1:
@@ -564,8 +593,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		SDL_FillRect(loadedSurface, NULL, BACKGROUND.get_value());
 
 		if (USES_3D) {
-			add_3d_objects(layer_count, length);
-			scene3d->draw(loadedSurface);
+			add_3d_objects(left_scene, layer_count, length);
+			add_3d_objects(right_scene, layer_count, length);
+			left_scene->draw(loadedSurface);
+			right_scene->draw(loadedSurface);
 		} else {
 			for (int i = 0; i < total_count; i++)
 				shapes[i]->draw(loadedSurface);

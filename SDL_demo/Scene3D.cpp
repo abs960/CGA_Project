@@ -10,7 +10,7 @@ Scene3D::Scene3D() {
 			matrix->set_element(i, j, element);
 		}
 
-	store_shift = Point(SCREEN_WIDTH / 2 - SIDE_LENGTH, SCREEN_HEIGHT / 2 + SIDE_LENGTH, 0);
+	store_shift = Point(-SIDE_LENGTH, SIDE_LENGTH, 0);
 	matrix->set_element(0, 3, store_shift.x);
 	matrix->set_element(1, 3, store_shift.y);
 	matrix->set_element(2, 3, store_shift.z);
