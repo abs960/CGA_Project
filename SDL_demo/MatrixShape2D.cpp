@@ -6,6 +6,7 @@ MatrixShape2D::MatrixShape2D(int side_count) : MatrixShape2D(side_count, DEFAULT
 
 MatrixShape2D::MatrixShape2D(int side_count, int radius) {
 	matrix = new Matrix(3);
+	matrix->make_identity_matrix();
 	colour = Colour();
 	brush = nullptr;
 
@@ -114,11 +115,12 @@ void MatrixShape2D::init_points() {
 
 	int start_angle = abs(90 - (360 / side_count) / 2);
 	for (int i = 0; i < side_count; i++) {
-		Point tmp = Point(
-			radius * cos(2 * M_PI * i / side_count + RAD(start_angle)),
-			radius * sin(2 * M_PI * i / side_count + RAD(start_angle))
-		);
-		points[i] = apply_matrix_to_point(tmp);
+		std::vector<double> old_coords;
+		old_coords.push_back(radius * cos(2 * M_PI * i / side_count + RAD(start_angle)));
+		old_coords.push_back(radius * sin(2 * M_PI * i / side_count + RAD(start_angle)));
+		old_coords.push_back(1);
+		std::vector<double> new_coords = (*matrix) * old_coords;
+		points[i].from_vector(new_coords);
 	}
 }
 
@@ -129,7 +131,6 @@ MatrixShape2D & MatrixShape2D::operator=(const MatrixShape2D & other) {
 	*matrix = *(other.matrix);
 	colour = other.colour;
 	*brush = *(other.brush);
-
 	side_count = other.side_count;
 	radius = other.radius;
 	center = other.center;
@@ -137,20 +138,4 @@ MatrixShape2D & MatrixShape2D::operator=(const MatrixShape2D & other) {
 	points = new Point[side_count];
 	for (int i = 0; i < side_count; i++)
 		points[i] = other.points[i];
-}
-
-Point MatrixShape2D::apply_matrix_to_point(Point old) {
-	std::vector<double> old_coords;
-	old_coords.push_back(old.x);
-	old_coords.push_back(old.y);
-	old_coords.push_back(1);
-
-	std::vector<double> new_coords = (*matrix) * old_coords;
-
-	Point result = Point(
-		new_coords[0],
-		new_coords[1]
-	);
-
-	return result;
 }

@@ -6,12 +6,10 @@
 class MatrixShape2D : public Shape2D {
 protected:
 	Matrix* matrix;
-
 	float angle;
 	float scale;
 	Point center;
 
-	Point apply_matrix_to_point(Point old);
 	void init_points();
 public:
 	MatrixShape2D();

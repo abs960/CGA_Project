@@ -87,6 +87,8 @@
   <ItemGroup>
     <ClInclude Include="BrezenheimLine.h" />
     <ClInclude Include="Colour.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="Controller2D.h" />
     <ClInclude Include="CyrusBeckLine.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="Facet.h" />
@@ -98,6 +100,8 @@
     <ClInclude Include="Point.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="QuaternionScene3D.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Scene2D.h" />
     <ClInclude Include="Scene3D.h" />
     <ClInclude Include="SectionWindow.h" />
     <ClInclude Include="Shape2D.h" />
@@ -109,6 +113,8 @@
   <ItemGroup>
     <ClCompile Include="BrezenheimLine.cpp" />
     <ClCompile Include="Colour.cpp" />
+    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Controller2D.cpp" />
     <ClCompile Include="CyrusBeckLine.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="Facet.cpp" />
@@ -120,6 +126,8 @@
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="QuaternionScene3D.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Scene2D.cpp" />
     <ClCompile Include="Scene3D.cpp" />
     <ClCompile Include="SDL_demo.cpp" />
     <ClCompile Include="SectionWindow.cpp" />

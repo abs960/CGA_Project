@@ -41,6 +41,13 @@ void Matrix::set_element(int col, int row, double value) {
 	elements[col][row] = value;
 }
 
+void Matrix::make_identity_matrix() {
+	int count = height < width ? height : width;
+	for (int i = 0; i < count; i++)
+		for (int j = 0; j < count; j++)
+			elements[i][j] = (i == j) ? 1 : 0;
+}
+
 Matrix& Matrix::operator=(const Matrix& other) {
 	if (&other == this)
 		return *this;

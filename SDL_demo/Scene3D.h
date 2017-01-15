@@ -4,9 +4,10 @@
 #include "Line.h"
 #include "Matrix.h"
 #include "Colour.h"
+#include "Scene.h"
 #include "stdafx.h"
 
-class Scene3D {
+class Scene3D : public Scene {
 protected:
 	Point store_shift;
 	Vector observer = Vector(0, 0, -1000);
@@ -42,11 +43,11 @@ public:
 	virtual void rotate_x(float d_angle);
 	virtual void rotate_y(float d_angle);
 	virtual void rotate_z(float d_angle);
-	virtual void rotate_vector(Vector vector, double d_angle);
+	virtual void rotate_vector(Vector vector, float d_angle);
 	virtual void move(float dx, float dy, float dz);
 	virtual void scale(float d_scale);
 
-	virtual void draw(SDL_Surface* s);
+	virtual void draw();
 
 	Scene3D& operator=(const Scene3D& other);
 };

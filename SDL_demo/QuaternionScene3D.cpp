@@ -40,7 +40,7 @@ void QuaternionScene3D::rotate_z(float d_angle) {
 	rotate_vector(Vector(0, 0, 1), d_angle);
 }
 
-void QuaternionScene3D::rotate_vector(Vector vector, double d_angle) {
+void QuaternionScene3D::rotate_vector(Vector vector, float d_angle) {
 	save_shift();
 
 	Vector delta_angle = vector.get_normalized() * d_angle;

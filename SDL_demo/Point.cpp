@@ -10,6 +10,23 @@ Point::Point(double x, double y, double z) {
 	this->z = z;
 }
 
+Point::Point(std::vector<double> v) {
+	int size = v.size();
+	if (size >= 3) {
+		x = v.at(0);
+		y = v.at(1);
+		z = v.at(2);
+	} else if (size == 2) {
+		x = v.at(0);
+		y = v.at(1);
+		z = DEFAULT_COORDINATE;
+	} else if (size == 1) {
+		x = v.at(0);
+		y = DEFAULT_COORDINATE;
+		z = DEFAULT_COORDINATE;
+	}
+}
+
 Point::Point(const Point & copy) {
 	x = copy.x;
 	y = copy.y;
@@ -92,6 +109,27 @@ Point Point::get_normalized() {
 	normalized.y = y / length;
 	normalized.z = z / length;
 	return normalized;
+}
+
+void Point::from_vector(std::vector<double> v) {
+	int size = v.size();
+	if (size >= 3) {
+		this->x = v.at(0);
+		this->y = v.at(1);
+		this->z = v.at(2);
+	} else if (size == 2) {
+		this->x = v.at(0);
+		this->y = v.at(1);
+	} else if (size == 1) {
+		this->x = v.at(0);
+	}
+}
+
+std::vector<double> Point::to_vector() {
+	std::vector<double> res;
+	res.push_back(x);
+	res.push_back(y);
+	res.push_back(z);
 }
 
 bool Point::equals(float f1, float f2) {

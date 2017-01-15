@@ -24,6 +24,7 @@ public:
 	int get_height();
 	double get_element(int col, int row);
 	void set_element(int col, int row, double value);
+	void make_identity_matrix();
 
 	Matrix& operator=(const Matrix &other);
 

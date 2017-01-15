@@ -25,7 +25,7 @@ Vector ROTATION = Vector(300, 150, 225);
 const bool USES_3D = true;
 
 const int
-// Transformation matrices counts
+	// Transformation matrices counts
 	SCL = 0,
 	ROT = 1,
 	TRS = 2,
@@ -58,8 +58,8 @@ const float
 	// Matrices initial values
 	SCALE_START = 1,
 	ANGLE_START = 0, 
-	XT_START = SCREEN_WIDTH / 2, 
-	YT_START = SCREEN_HEIGHT / 2, 
+	XT_START = 0, 
+	YT_START = 0, 
 	// Steps values for matrices
 	STEP_S = 0.01,
 	STEP_T = 5,
@@ -117,7 +117,8 @@ bool init()
 
 void init_shapes() {
 	if (USES_3D) {
-		left_scene = new QuaternionScene3D();
+		QuaternionScene3D* q = new QuaternionScene3D();
+		left_scene = q;
 		left_scene->set_base_line(new WuLine());
 		left_scene->set_colour(Colour(Colour::COLOUR_GREEN));
 		add_3d_objects(left_scene, START_LAYER_COUNT, START_SHAPE_LENGTH);
@@ -595,8 +596,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (USES_3D) {
 			add_3d_objects(left_scene, layer_count, length);
 			add_3d_objects(right_scene, layer_count, length);
-			left_scene->draw(loadedSurface);
-			right_scene->draw(loadedSurface);
+			left_scene->set_surface(loadedSurface);
+			right_scene->set_surface(loadedSurface);
+			left_scene->draw();
+			right_scene->draw();
 		} else {
 			for (int i = 0; i < total_count; i++)
 				shapes[i]->draw(loadedSurface);

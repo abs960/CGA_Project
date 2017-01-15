@@ -3,11 +3,11 @@
 #include "Colour.h"
 #include "Line.h"
 
-#define DEFAULT_SIDE_COUNT 4
-#define DEFAULT_RADIUS 100
-
 class Shape2D {
 protected:
+	static const int DEFAULT_SIDE_COUNT = 4;
+	static const int DEFAULT_RADIUS = 100;
+
 	Colour colour;
 	Line* brush;
 	Point* points;

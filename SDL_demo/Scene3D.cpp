@@ -109,7 +109,7 @@ void Scene3D::rotate_z(float d_angle) {
 	load_shift();
 }
 
-void Scene3D::rotate_vector(Vector vector, double d_angle) {
+void Scene3D::rotate_vector(Vector vector, float d_angle) {
 	float rad_angle = RAD(d_angle);
 
 	save_shift();
@@ -161,10 +161,10 @@ void Scene3D::scale(float d_scale) {
 	load_shift();
 }
 
-void Scene3D::draw(SDL_Surface * s) {
+void Scene3D::draw() {
 	apply_transformation();
 	std::vector<Facet> visible_facets = get_visible_facets();
-	std::vector<Facet> facets_to_draw = draw_facets(s, visible_facets);
+	std::vector<Facet> facets_to_draw = draw_facets(surface, visible_facets);
 }
 
 Scene3D & Scene3D::operator=(const Scene3D & other) {

@@ -78,7 +78,6 @@ Shape2D & Shape2D::operator=(const Shape2D & other) {
 
 	colour = other.colour;
 	*brush = *(other.brush);
-
 	side_count = other.side_count;
 	radius = other.radius;
 

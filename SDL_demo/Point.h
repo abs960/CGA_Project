@@ -2,11 +2,11 @@
 
 #include "stdafx.h"
 
-#define DEFAULT_COORDINATE 0
-
 typedef class Point {
 private:
 	bool equals(float f1, float f2);
+protected:
+	static const int DEFAULT_COORDINATE = 0;
 public:
 	float x;
 	float y;
@@ -15,6 +15,7 @@ public:
 	Point();
 	Point(double x, double y);
 	Point(double x, double y, double z);
+	Point(std::vector<double> v);
 	Point(const Point& copy);
 	~Point();
 
@@ -36,4 +37,7 @@ public:
 	Point vector_mult(Point p);
 	double modulus();
 	Point get_normalized();
+	
+	void from_vector(std::vector<double> v);
+	std::vector<double> to_vector();
 } Point, Vector;
