@@ -13,153 +13,240 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Lines">
+      <UniqueIdentifier>{444c67c6-3759-46ef-b9a0-0ad5d119e7c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lines">
+      <UniqueIdentifier>{76940dca-a699-4eda-9dcd-64e094e2ac89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shapes">
+      <UniqueIdentifier>{98929a93-0073-45e0-8e59-560ba26b5925}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shapes\2D">
+      <UniqueIdentifier>{6c3d1b78-80b7-4b37-8a68-e40ea481b0e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shapes\3D">
+      <UniqueIdentifier>{02851693-67dd-4a65-bb37-9eb01db51581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shapes">
+      <UniqueIdentifier>{07ff5154-065b-46d6-a7a8-facac48db35b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shapes\2D">
+      <UniqueIdentifier>{ba5d5b35-a326-4168-a318-bae07fd61c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shapes\3D">
+      <UniqueIdentifier>{b1dc7e90-1899-4011-b863-5f24b4497247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{1939542e-bd34-4fdb-a9f9-e5a38fd29b5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes\2D">
+      <UniqueIdentifier>{c4100008-8a8a-40d3-a728-91dab979b40a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes\3D">
+      <UniqueIdentifier>{572a163f-56fa-485a-9c8c-027e029d7752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controllers">
+      <UniqueIdentifier>{05c10140-9ab2-4842-b1fc-ecb594a8a868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shapes\3D\Supplementary">
+      <UniqueIdentifier>{4b3aae4c-9e43-4287-ae30-860f72477efe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Supplementary">
+      <UniqueIdentifier>{5df5f5f5-9e91-4ecb-bfcc-097b3aba0809}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Windows">
+      <UniqueIdentifier>{5f861e02-5d38-40d4-93da-d42333308567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers">
+      <UniqueIdentifier>{5b1af476-17eb-46d2-a82e-a0b001d46daa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controllers\2D">
+      <UniqueIdentifier>{4413da1a-fba5-4ab2-b945-0856c3752b82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controllers\3D">
+      <UniqueIdentifier>{d9c8a84b-971d-41f5-a80d-506b043f1be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers\2D">
+      <UniqueIdentifier>{9f75e892-7d31-4910-a7ab-2bc19d3711d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers\3D">
+      <UniqueIdentifier>{06e7fae3-7bbd-4ae9-a358-4728b04ff0ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows">
+      <UniqueIdentifier>{d6759c71-3cec-484a-a64d-abbd32cfc548}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Supplementary">
+      <UniqueIdentifier>{c63c25ae-4cf1-4423-b49b-81e4fbe05bd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes">
+      <UniqueIdentifier>{02110e72-d690-4119-b8dd-3cc0a2e06756}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes\2D">
+      <UniqueIdentifier>{4de373ac-7bf8-4f93-906c-5234fb72ca5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes\3D">
+      <UniqueIdentifier>{071fc0f2-1eed-4ac8-aeaf-3f1a165877e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shapes\3D\Supplementary">
+      <UniqueIdentifier>{033e09b4-fd9f-49e7-88d2-eb15c60fba50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Startup">
+      <UniqueIdentifier>{e081c056-4f5e-4752-8949-0d78b1192f2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="draw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Point.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Colour.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BrezenheimLine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WuLine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shape2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MatrixShape2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NestedShape2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SectionWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lines</Filter>
     </ClInclude>
     <ClInclude Include="CyrusBeckLine.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lines</Filter>
     </ClInclude>
-    <ClInclude Include="Scene3D.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files\Lines</Filter>
     </ClInclude>
-    <ClInclude Include="Shape3D.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WuLine.h">
+      <Filter>Header Files\Lines</Filter>
     </ClInclude>
-    <ClInclude Include="Facet.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="MatrixShape2D.h">
+      <Filter>Header Files\Shapes\2D</Filter>
     </ClInclude>
-    <ClInclude Include="QuaternionScene3D.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="NestedShape2D.h">
+      <Filter>Header Files\Shapes\2D</Filter>
     </ClInclude>
-    <ClInclude Include="Quaternion.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SectionWindow.h">
+      <Filter>Header Files\Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape2D.h">
+      <Filter>Header Files\Shapes\2D</Filter>
     </ClInclude>
     <ClInclude Include="PerspectiveShape3D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Shapes\3D</Filter>
     </ClInclude>
-    <ClInclude Include="Scene2D.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Shape3D.h">
+      <Filter>Header Files\Shapes\3D</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene2D.h">
+      <Filter>Header Files\Scenes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="QuaternionScene3D.h">
+      <Filter>Header Files\Scenes\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene3D.h">
+      <Filter>Header Files\Scenes\3D</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Facet.h">
+      <Filter>Header Files\Shapes\3D\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="Colour.h">
+      <Filter>Header Files\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>Header Files\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Header Files\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>Header Files\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files\Supplementary</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files\Supplementary</Filter>
     </ClInclude>
     <ClInclude Include="Controller2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers\2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDL_demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Point.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Colour.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BrezenheimLine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WuLine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shape2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MatrixShape2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NestedShape2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SectionWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Lines</Filter>
     </ClCompile>
     <ClCompile Include="CyrusBeckLine.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Lines</Filter>
     </ClCompile>
-    <ClCompile Include="Scene3D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source Files\Lines</Filter>
     </ClCompile>
-    <ClCompile Include="Shape3D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="WuLine.cpp">
+      <Filter>Source Files\Lines</Filter>
     </ClCompile>
-    <ClCompile Include="Facet.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="MatrixShape2D.cpp">
+      <Filter>Source Files\Shapes\2D</Filter>
     </ClCompile>
-    <ClCompile Include="QuaternionScene3D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="NestedShape2D.cpp">
+      <Filter>Source Files\Shapes\2D</Filter>
     </ClCompile>
-    <ClCompile Include="Quaternion.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Shape2D.cpp">
+      <Filter>Source Files\Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="SectionWindow.cpp">
+      <Filter>Source Files\Shapes\2D</Filter>
     </ClCompile>
     <ClCompile Include="PerspectiveShape3D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shapes\3D</Filter>
     </ClCompile>
-    <ClCompile Include="Scene2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Shape3D.cpp">
+      <Filter>Source Files\Shapes\3D</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="Controller2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Controllers\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Colour.cpp">
+      <Filter>Source Files\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="draw.cpp">
+      <Filter>Source Files\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Source Files\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="Point.cpp">
+      <Filter>Source Files\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Source Files\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene2D.cpp">
+      <Filter>Source Files\Scenes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="QuaternionScene3D.cpp">
+      <Filter>Source Files\Scenes\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene3D.cpp">
+      <Filter>Source Files\Scenes\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Facet.cpp">
+      <Filter>Source Files\Shapes\3D\Supplementary</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL_demo.cpp">
+      <Filter>Source Files\Startup</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

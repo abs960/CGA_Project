@@ -108,6 +108,7 @@
     <ClInclude Include="Shape3D.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="WuLine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +135,7 @@
     <ClCompile Include="Shape2D.cpp" />
     <ClCompile Include="Shape3D.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="WuLine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

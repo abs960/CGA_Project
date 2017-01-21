@@ -2,11 +2,10 @@
 
 #include "vector"
 
-#define DEFAULT_WIDTH 3
-#define DEFAULT_HEIGHT 3
-
 class Matrix {
 private:
+	static const int DEFAULT_WIDTH = 3;
+	static const int DEFAULT_HEIGHT = 3;
 	int width;
 	int height;
 	double **elements;

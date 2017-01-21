@@ -1,18 +1,21 @@
 #pragma once
 
 #include "SDL.h"
+#include "stdafx.h"
 
 class Controller {
 public:
 	Controller();
+	~Controller();
 
-	virtual bool init() = 0;
+	virtual bool init(SDL_Window* gWindow, int width, int height);
 	virtual void handle_event(SDL_Event e) = 0;
+	virtual void draw() = 0;
 protected:
-	SDL_Window* gWindow;
 	SDL_Renderer* gRenderer;
 	SDL_Texture* gTexture;
+	SDL_Surface* surface;
 
-	bool init_successful;
+	virtual bool init_SDL(SDL_Window* gWindow, int width, int height);
 };
 
