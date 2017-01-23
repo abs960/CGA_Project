@@ -5,18 +5,10 @@ SectionWindow::SectionWindow() : SectionWindow(DEFAULT_SIDE_COUNT, DEFAULT_RADIU
 SectionWindow::SectionWindow(int side_count) : SectionWindow(side_count, DEFAULT_RADIUS) {}
 
 SectionWindow::SectionWindow(int side_count, int radius) {
-	matrix = new Matrix(3);
-	colour = Colour();
-	brush = nullptr;
-
 	transparent = true;
 	this->side_count = side_count;
 	this->radius = radius;
 	init_points();
-
-	center = Point();
-	angle = 0.0f;
-	scale = 0.0f;
 }
 
 SectionWindow::SectionWindow(const SectionWindow & copy) {

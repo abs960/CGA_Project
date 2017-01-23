@@ -30,6 +30,6 @@ protected:
 	std::vector<Controller*> controllers;
 	int active_controller_number;
 
-	void add_controller(Controller* controller);
+	virtual void add_controller(Controller* controller);
 };
 

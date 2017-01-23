@@ -12,7 +12,7 @@
 #include "PerspectiveShape3D.h"
 #include "Window.h"
 
-const bool TESTING_WINDOW_CLASS = false;
+const bool TESTING_WINDOW_CLASS = true;
 
 bool init();
 void init_shapes();
@@ -306,22 +306,23 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	if (TESTING_WINDOW_CLASS) {
 
-		Window * wnd = new Window();
-		do {
-			if (!wnd->init()) {
-				break;
-			}
+		Window * wnd = new Window(1024, 640);
+		if (!wnd->init()) {
+			printf("Failed to initialize!\n");
+			wnd->close();
+			delete wnd;
+			return -1;
+		}
 
-			if (!wnd->run()) {
-				break;
-			}
-
-		} while (false);
+		if (!wnd->run()) {
+			printf("Runtime error, exiting...\n");
+			wnd->close();
+			delete wnd;
+			return -1;
+		}
 
 		wnd->close();
 		delete wnd;
-
-		getchar();
 
 	} else {
 

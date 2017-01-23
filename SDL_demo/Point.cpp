@@ -130,6 +130,7 @@ std::vector<double> Point::to_vector() {
 	res.push_back(x);
 	res.push_back(y);
 	res.push_back(z);
+	return res;
 }
 
 bool Point::equals(float f1, float f2) {

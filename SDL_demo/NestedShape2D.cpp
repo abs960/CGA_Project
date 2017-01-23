@@ -5,18 +5,10 @@ NestedShape2D::NestedShape2D() : NestedShape2D(DEFAULT_SIDE_COUNT, DEFAULT_RADIU
 NestedShape2D::NestedShape2D(int side_count) : NestedShape2D(side_count, DEFAULT_RADIUS) {}
 
 NestedShape2D::NestedShape2D(int side_count, int radius) {
-	matrix = new Matrix(3);
-	colour = Colour();
-	brush = nullptr;
-
 	nested_count = DEFAULT_NESTED_COUNT;
 	this->side_count = side_count;
 	this->radius = radius;
 	init_points();
-
-	center = Point();
-	angle = 0.0f;
-	scale = 0.0f;
 }
 
 NestedShape2D::NestedShape2D(const NestedShape2D & copy) {

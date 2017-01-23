@@ -58,6 +58,7 @@ void Scene2D::rotate_z(float d_angle) {
 	tmp.set_element(1, 1, cos(rad_angle));
 	tmp.set_element(2, 2, 1);
 	*matrix *= tmp;
+	apply_matrix(tmp);
 }
 
 void Scene2D::rotate_vector(Vector v, float d_angle) {}
@@ -70,6 +71,7 @@ void Scene2D::move(float dx, float dy, float dz) {
 	tmp.set_element(1, 2, dy);
 	tmp.set_element(2, 2, 1);
 	*matrix *= tmp;
+	apply_matrix(tmp);
 }
 
 void Scene2D::scale(float d_scale) {
@@ -78,13 +80,11 @@ void Scene2D::scale(float d_scale) {
 	tmp.set_element(1, 1, 1 + d_scale);
 	tmp.set_element(2, 2, 1);
 	*matrix *= tmp;
+	apply_matrix(tmp);
 }
 
 void Scene2D::draw() {
 	SDL_FillRect(surface, NULL, background_colour->get_value());
-
-	// TODO: add matrices update
-
 	for (MatrixShape2D* s : objects) {
 		s->draw(surface);
 	}
@@ -114,4 +114,10 @@ void Scene2D::clear_matrix() {
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
 			matrix->set_element(i, j, (i == j ? 1 : 0));
+}
+
+void Scene2D::apply_matrix(Matrix m) {
+	for (MatrixShape2D* s : objects) {
+		s->mult_by_matrix(&m);
+	}
 }

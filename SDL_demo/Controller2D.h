@@ -2,6 +2,9 @@
 
 #include "Controller.h"
 #include "Scene2D.h"
+#include "MatrixShape2D.h"
+#include "SectionWindow.h"
+#include "NestedShape2D.h"
 
 class Controller2D : public Controller {
 public:
@@ -15,6 +18,14 @@ public:
 
 	~Controller2D();
 protected:
+	// TODO: use flags and bit operations for flags, remove this 
+	bool separate_control = false;
+
+	int active_shape_count = -1;
+
+	const float STEP_T = 5;
+	const float STEP_R = 5;
+	const float STEP_S = 0.05;
 	Scene2D * scene;
 
 	virtual bool init_scene();

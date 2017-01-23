@@ -16,10 +16,8 @@ Shape2D::Shape2D(int side_count, int radius) {
 Shape2D::Shape2D(const Shape2D & copy) {
 	colour = copy.colour;
 	*brush = *(copy.brush);
-
 	side_count = copy.side_count;
 	radius = copy.radius;
-
 	points = new Point[side_count];
 	for (int i = 0; i < side_count; i++)
 		points[i] = copy.points[i];
@@ -80,15 +78,15 @@ Shape2D & Shape2D::operator=(const Shape2D & other) {
 	*brush = *(other.brush);
 	side_count = other.side_count;
 	radius = other.radius;
-
 	points = new Point[side_count];
 	for (int i = 0; i < side_count; i++)
 		points[i] = other.points[i];
 }
 
 void Shape2D::init_points() {
+	if (points != nullptr)
+		delete[] points;
 	points = new Point[side_count];
-
 	int start_angle = abs(90 - (360 / side_count) / 2);
 	for (int i = 0; i < side_count; i++) {
 		points[i] = Point(

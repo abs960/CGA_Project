@@ -2,6 +2,10 @@
 
 #include "SDL.h"
 #include "stdafx.h"
+#include "Line.h"
+#include "BrezenheimLine.h"
+#include "WuLine.h"
+#include "CyrusBeckLine.h"
 
 class Controller {
 public:

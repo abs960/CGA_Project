@@ -5,11 +5,17 @@
 
 class MatrixShape2D : public Shape2D {
 protected:
+	const float SCALE_START = 1;
+	const float ANGLE_START = 0;
+	const float XT_START = 0;
+	const float YT_START = 0;
+
 	Matrix* matrix;
 	float angle;
 	float scale;
 	Point center;
 
+	void init_matrix();
 	void init_points();
 public:
 	MatrixShape2D();
@@ -20,6 +26,7 @@ public:
 
 	double get_matrix_element(int row, int col);
 	void set_matrix(Matrix* matrix);
+	void mult_by_matrix(Matrix* m);
 	void set_angle(float angle);
 	float get_angle();
 	void set_scale(float scale);

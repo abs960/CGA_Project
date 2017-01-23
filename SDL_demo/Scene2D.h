@@ -31,5 +31,6 @@ protected:
 
 	void clear_objects();
 	void clear_matrix();
+	void apply_matrix(Matrix m);
 };
 
